@@ -1,0 +1,52 @@
+// Instamine Concrete module
+// DO NOT MODIFY THIS SCRIPT FILE
+// @author utk003
+// @version 12/17/20
+
+#include instamine "../instamine.txt"
+
+import java.util;
+
+import org.bukkit;
+import org.bukkit.block;
+import org.bukkit.event.block;
+import org.bukkit.event.player;
+
+@PlayerInteract : {
+    PlayerInteractEvent event = wrapper.getEvent();
+    if (event.getAction() != Action.LEFT_CLICK_BLOCK)
+        return;
+
+    Block block = event.getClickedBlock();
+    if (block == null)
+        return;
+
+    if (validTypes.contains(block.getType()))
+        // require Haste 2 and Efficiency 5 on tool (the last two arguments)
+        instamine::breakBlock(block, event.getPlayer(), validTools, 2, 5);
+}
+
+Set validTypes = new HashSet(), validTools = new HashSet();
+@Init : {
+    // All valid blocks --> Allow only concrete blocks for this module
+    validTypes.add(Material.CYAN_CONCRETE);
+    validTypes.add(Material.BLACK_CONCRETE);
+    validTypes.add(Material.BLUE_CONCRETE);
+    validTypes.add(Material.BROWN_CONCRETE);
+    validTypes.add(Material.GRAY_CONCRETE);
+    validTypes.add(Material.GREEN_CONCRETE);
+    validTypes.add(Material.LIGHT_BLUE_CONCRETE);
+    validTypes.add(Material.LIGHT_GRAY_CONCRETE);
+    validTypes.add(Material.LIME_CONCRETE);
+    validTypes.add(Material.MAGENTA_CONCRETE);
+    validTypes.add(Material.ORANGE_CONCRETE);
+    validTypes.add(Material.PINK_CONCRETE);
+    validTypes.add(Material.PURPLE_CONCRETE);
+    validTypes.add(Material.RED_CONCRETE);
+    validTypes.add(Material.WHITE_CONCRETE);
+    validTypes.add(Material.YELLOW_CONCRETE);
+
+    // All valid tools --> Only diamond and netherite pickaxes
+    validTools.add(Material.DIAMOND_PICKAXE);
+    validTools.add(Material.NETHERITE_PICKAXE);
+}

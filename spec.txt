@@ -1,0 +1,31 @@
+// Comment
+#include unique_id "file_path"
+
+@EventNameID : {
+  // single parameter named "wrapper"
+  *code to execute*
+}
+
+$exec command : {
+  // 2 parameters: (CommandSender sender, String[] args)
+  *code to execute*
+}
+
+$comp command : {
+  // 2 parameters: (CommandSender sender, String[] args)
+  *code to execute*
+}
+
+return_type helperMethod() {
+  *code*
+}
+
+struct struct_name_id {
+  var_type var_id1, var_id2;
+
+  ret1 method1() {
+    int i = 0; return i < 10;
+  }
+  ret2 method2() {
+  }
+}

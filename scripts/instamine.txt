@@ -1,0 +1,70 @@
+// Instamine module
+// DO NOT MODIFY THIS SCRIPT FILE (except where indicated by comments)
+// @author utk003
+// @version 12/17/20
+
+// comment any modules you don't want activated
+#include ores               "instamine/ores.txt"
+#include glass              "instamine/glass.txt"
+#include concrete           "instamine/concrete.txt"
+#include logs               "instamine/logs.txt"
+#include wood_products      "instamine/wood_products.txt"
+#include stone_products     "instamine/stone_products.txt"
+#include lighting_blocks    "instamine/lighting_blocks.txt"
+#include blocks_of          "instamine/blocks_of.txt"
+
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT
+
+import java.util;
+
+import org.bukkit;
+import org.bukkit.block;
+import org.bukkit.enchantments;
+import org.bukkit.entity;
+import org.bukkit.inventory;
+import org.bukkit.inventory.meta;
+import org.bukkit.potion;
+
+// Breaks the specified block if and only if the given player
+// has the right potion effects, has a valid tool, and the tool
+// has the minimum required level of the Efficiency enchantment
+//
+// @param block         The block to be instamined
+// @param player        The player who is currenly mining
+// @param validTools    A set of all valid tools for the instamine
+// @param minHaste      The minimum level of Haste required for the instamine
+// @param minEfficiency The minimum level of Efficiency required for the instamine
+void breakBlock(Block block, Player player, Set validTools, int minHaste, int minEfficiency) {
+    // Make sure player has the minimum required level of Haste effect
+    PotionEffect potionEffect = player.getPotionEffect(PotionEffectType.FAST_DIGGING);
+    if (potionEffect == null || potionEffect.getAmplifier() < minHaste - 1)
+        return;
+
+    // Make sure player does not have Mining Fatigue
+    potionEffect = player.getPotionEffect(PotionEffectType.SLOW_DIGGING);
+    if (potionEffect != null)
+        return;
+
+    // Make sure player is using a valid tool
+    // with the minimum required level of Efficiency
+    ItemStack mainHandItem = player.getInventory().getItemInMainHand();
+    Material itemType = mainHandItem.getType();
+    if (!validTools.contains(itemType))
+        return;
+    if (mainHandItem.getEnchantmentLevel(Enchantment.DIG_SPEED) < minEfficiency)
+        return;
+
+    // Calculate chance of durability loss from item's Unbreaking enchantment level
+    int unbreakingLevel = mainHandItem.getEnchantmentLevel(Enchantment.DURABILITY);
+    double chance = 1.0 / (unbreakingLevel + 1.0);
+    if (Math.random() < chance) {
+        Damageable damageable = ((Damageable) mainHandItem.getItemMeta());
+        if (damageable == null)
+            return;
+        damageable.setDamage(damageable.getDamage() + 1);
+        mainHandItem.setItemMeta((ItemMeta) damageable);
+    }
+
+    // (Naturally) Drop 1 of the item of the block in the world at the location of the block
+    block.breakNaturally(mainHandItem);
+}

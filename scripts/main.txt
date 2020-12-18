@@ -1,0 +1,7 @@
+// Main Module Controller
+//
+// @author utk003
+// @version 12/17/20
+
+// comment any modules you don't want activated
+#include instamine "instamine.txt"

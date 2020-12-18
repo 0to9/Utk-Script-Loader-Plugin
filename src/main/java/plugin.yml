@@ -1,0 +1,15 @@
+name: UtkScriptLoaderPlugin
+version: 3.0.0-1.16.4
+author: utk003
+main: me.utk.spigot_scripting.plugin.Main
+api-version: 1.16.4
+commands:
+  utk:
+    description: Primary command for the Utk Script Loader Plugin
+    usage: "Usage: '/utk' + sub-commands and modifiers"
+  v++:
+    description: Secondary command for the Utk Script Loader Plugin
+    usage: "Usage: '/v++' + sub-commands and modifiers"
+  vpp:
+    description: Tertiary command for the Utk Script Loader Plugin
+    usage: "Usage: '/vpp' + sub-commands and modifiers"
