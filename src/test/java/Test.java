@@ -130,6 +130,7 @@ public class Test {
             case SEA_LANTERN:
             case GLOWSTONE:
             case LANTERN:
+            case SOUL_LANTERN:
             case REDSTONE_LAMP:
                 return 8;
 

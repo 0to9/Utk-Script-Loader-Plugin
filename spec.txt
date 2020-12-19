@@ -223,8 +223,8 @@ $comp do_nothing : {
  * Also, note that, unlike Java classes, structs do not have inheritance. All
  * structs are the equivalent of base Java classes which only extend the Object class.
  *
- * Syntax: var_type var1,              // creates 2 instance variables of type var_type, var1 is not initialized
- *                  var2 = *valid Java code expression*; // var2 is instantiated to the result of the expression
+ * Syntax: var_type var1,        // creates 2 instance variables of type var_type, var1 is not initialized
+ *                  var2 = *valid Java expression*; // var2 is initialized to the result of the expression
  *
  *         return_type methodID(type1 arg1, ..., typen argn) {
  *             // n arguments
@@ -244,7 +244,7 @@ $comp do_nothing : {
  *             // Method id: the struct id whose constructor this is
  *         }
  */
-int randomVar = 5;
+int randomInt = 4; // https://xkcd.com/221/
 
 void doNothing() {
     // Do nothing if this method is called

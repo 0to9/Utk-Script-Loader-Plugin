@@ -80,8 +80,6 @@
             <version>3.27.0-GA</version>
         </dependency>
 
-        <!-- IntelliJ -->
-
         <!-- Spigot API -->
         <dependency>
             <groupId>org.spigotmc</groupId>
