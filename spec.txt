@@ -1,31 +1,283 @@
-// Comment
-#include unique_id "file_path"
+/*
+ * This is a general specifications file for creating a script
+ * compatible with the Utk Script Loader Plugin for SpigotMC.
+ *
+ * Please read this file in its entirety before creating
+ * any scripts of your own. Failure to do so can result in
+ * non-functional scripts and, in some cases, can even result
+ * in crashing the JVM or corrupting your game's world save.
+ *
+ * Additionally, notice that this specification file itself
+ * meets all of the requirements for a script file to compile.
+ * This file can compile with the Utk Script Loader Plugin.
+ * However, it will do absolutely nothing, as it defines
+ * no implementations for any hook methods.
+ *
+ * @author Utkarsh Priyam
+ * @version December 18, 2020
+ */
 
-@EventNameID : {
-  // single parameter named "wrapper"
-  *code to execute*
+// You can use '//' for single line comments.
+/*
+ * You can also use multiline comments!!!
+ *
+ * Enclose anything you want to comment in
+ * '/ *' and '* /' (without the spaces).
+ *
+ * Note that, like most other programming languages,
+ * multiline comments do NOT nest. In other words,
+ * removing the spaces from the example above
+ * would prevent this file from compiling.
+ */
+
+/*
+ * The scripting language provides an '#include' directive
+ * for including other script files into the current one.
+ *
+ * This function is most important for its side effect of
+ * loading all of the included file's hook methods. In other
+ * words, '#include' can be used to create configuration files
+ * for scripts. Once the implementation script files are created,
+ * a main configuration script file can simply include whichever
+ * scripts should be included as per the desired configuration.
+ *
+ * To access variables, methods, or structs defined in another
+ * script file (let's say with the id 'includedScript'), simply
+ * prepend 'includedScript::' to the variable, method, or struct name.
+ * For example, 'includedScript::variable' will get the variable
+ * 'variable' that is defined in the script corresponding to 'includedScript'.
+ *
+ * Syntax: #include unique_id "file_path"
+ * Includes a script located at 'file_path' (relative to the
+ * parent directory of this script) and assigns 'unique_id'
+ * as the unique identifier for that script.
+ *
+ * Note:
+ * 1) The file path is enclosed in quotes ("")
+ * 2) A script file can include itself (this has no real effect)
+ * 3) A single script can be bound to more than one unique IDs
+ *   - This is considered a bad practice, but it can be done
+ */
+#include specFile "spec.txt" // include the current script file with id 'specFile'
+
+/*
+ * In order to facilitate a reasonable script coding experience,
+ * you can use the 'import' directive identically to Java in order
+ * to import any classes you wish to use in your script code.
+ * Otherwise, the classes will have to be fully qualified in the code,
+ * exactly as it works in regular Java.
+ *
+ * Script imports also have one additional feature. Instead of importing
+ * all classes in a package with 'import package.*;', for example, you can
+ * simply write 'import package;' instead, which will have the same effect.
+ *
+ * Note that certain classes, specifically those from the
+ * 'me.utk.spigot_scripting' package, cannot be imported at all. The
+ * script parser throws an exception and refuses to compile the script.
+ *
+ * Further to this point, scripts should only import the standard Java
+ * packages and the packages from the Spigot API. Any script which does
+ * otherwise is considered bad practice and should probably not be run.
+ * The only exception to this last point is for scripts which are
+ * accessing packages from utility libraries. Note, however, that these
+ * scripts may not work at all if the library is not present at runtime.
+ */
+import java.util; // import all classes from the 'java.util' package
+
+/*
+ * In order to interact with the Spigot API, or more specifically
+ * with the Spigot Events API, the scripting language provides a
+ * collection of event hooks, definable methods which execute
+ * whenever the specified event occurs.
+ *
+ * A full list of all the available events, their corresponding
+ * classes, and the  event IDs corresponding to each event can
+ * be found the "spec/events.txt" file.
+ *
+ * Syntax: @eventID : {
+ *             // 1 argument: (? wrapper)
+ *
+ *             // valid Java code to execute
+ *             // See the method definition documentation for more details
+ *             // Event hook methods are void, so nothing is returned
+ *         }
+ *
+ * The sample code (above) creates a method implementation
+ * for the event hook with the id 'eventID'. Any such method
+ * is just like a normal method defined in the script, but with
+ * special parameters and return types to allow for their extended
+ * functionality with the Spigot API.
+ *
+ * These event hook methods have a single argument, which is
+ * an object whose type depends on 'eventID' and whose variable
+ * id is 'wrapper'. Depending on the specific event, 'wrapper'
+ * may have instance methods which can be called. However, scripts
+ * should be careful to not run any static methods off the event
+ * objects. Doing so could seriously impair both the script's
+ * and the plugin's abilities to function correctly.
+ *
+ * Additionally, these event hook methods have a 'void' return type.
+ * That is to say, they do not return any values. Keep that in mind
+ * when creating a script, or the hook implementation may not compile.
+ */
+@Init : {
+    // Do nothing on initialization
 }
 
-$exec command : {
-  // 2 parameters: (CommandSender sender, String[] args)
-  *code to execute*
+/*
+ * In addition to event hooks, this scripting language also provides
+ * additional hooks for executing commands and presenting tab
+ * completion data for those commands. For more information about
+ * these applications, read up on Minecraft's command system.
+ *
+ * First, a command executor can be defined with the '$exec' directive.
+ * Whenever the specified command is executed, this executor method will
+ * be called, with 2 arguments representing the command caller and the
+ * command arguments. The first argument, with the variable id 'sender',
+ * is of type 'org.bukkit.command.CommandSender' (from the Spigot API).
+ * The second is 'String[]' with the variable id 'args'. Lastly, the
+ * executor method is void, so nothing should be returned.
+ *
+ * Secondly, a command tab completer can be defined using the '$comp'
+ * directive. Whenever a player, the server, or any other CommandSender
+ * tries to use this command, this tab completer method will be called to
+ * provide information on how the CommandSender can complete the rest of
+ * the command call. This method is called with 2 arguments, both of which
+ * are identical to the arguments for a command executor. However, command
+ * tab completer methods return a 'java.util.List' which contains all
+ * possible ways the command can be completed. Specifically, the list is
+ * actually 'List<String>', but the implementation should use 'List'
+ * as generics are not supported for the compiled script code. Additionally,
+ * it is highly recommended that these methods not return null, as
+ * a returned value of null is considered an error by the script loading
+ * system and may result in the script being disabled internally.
+ *
+ * Although the documentation above refers to these executors and tab
+ * completers as bound to commands, the Spigot API only allows plugins
+ * to use commands explicitly coded into the 'plugin.yml' file, which
+ * means that commands cannot be generated during runtime. As a result,
+ * these command hooks are actually for sub-commands registered underneath
+ * any of the '/utk', '/v++', or '/vpp' commands provided by this plugin.
+ * These sub-commands can be called by providing the sub-command as
+ * the first argument to these three main commands.
+ *
+ * Note that all arguments and command IDs are case-insensitive.
+ * By default, everything will be provided to the executor and tab
+ * completer methods in lowercase.
+ *
+ * Syntax: $exec commandID : {
+ *             // 2 arguments: (CommandSender sender, String[] args)
+ *
+ *             // valid Java code to execute
+ *             // See the method definition documentation for more details
+ *             // Command executor methods are void, so nothing is returned
+ *         }
+ *         $exec commandID : {
+ *             // 2 arguments: (CommandSender sender, String[] args)
+ *
+ *             // valid Java code to execute
+ *             // See the method definition documentation for more details
+ *             // Command executor methods return lists of Strings
+ *             return new LinkedList();
+ *         }
+ */
+$exec do_nothing : {
+  // Do nothing if this command is executed
+}
+$comp do_nothing : {
+    // There are no possible completions for this command
+    return new LinkedList();
 }
 
-$comp command : {
-  // 2 parameters: (CommandSender sender, String[] args)
-  *code to execute*
+/*
+ * Alongside the large collection of hooks to interact with the Spigot API,
+ * the scripting language integrates very well with the Java programming
+ * language. Specifically, users can define variables, methods, and structs
+ * (the scripting equivalent of classes) in with very Java-like syntax.
+ *
+ * Before taking a closer look at all three of these constructs, note that
+ * variables and methods can be defined in the outer script body or inside
+ * of a struct. Meanwhile, structs can only be defined in the script body.
+ * In other words, you cannot created nested structs, unlike the Java equivalent.
+ *
+ * Also, note that variables and methods defined in the outer script body
+ * will be defined as static elements, which means that they will be accessible
+ * to other scripts simply by the script id (see the '#include' directive).
+ * On the other hand, when defined inside structs, these elements bound to
+ * specific instances of the struct and must be accessed as such.
+ *
+ * Firstly, variables are declarable and definable in basically exactly the
+ * same manner as in Java. Simply give a type, the variable id, and, if desired,
+ * an expression which can be evaluated to find the initial value of the variable.
+ *
+ * Likewise, methods can be declared and defined the same way they are in Java.
+ * Provide a return type, the method id, arguments, and the method body. Note
+ * that the method body is essentially just Java code, with a few additional
+ * features sprinkled in. For more details, see the "spec/code.txt" file.
+ *
+ * Lastly, structs can be declared and defined just like classes in Java, albeit
+ * with the 'struct' keyword replacing the 'class' keyword. Inside structs, you
+ * can have instance variables, methods, and constructors. The first two are
+ * defined exactly the same as when they are present outside structs, and the
+ * third (constructors) are defined as methods with an 'init' return type.
+ * Also, note that, unlike Java classes, structs do not have inheritance. All
+ * structs are the equivalent of base Java classes which only extend the Object class.
+ *
+ * Syntax: var_type var1,              // creates 2 instance variables of type var_type, var1 is not initialized
+ *                  var2 = *valid Java code expression*; // var2 is instantiated to the result of the expression
+ *
+ *         return_type methodID(type1 arg1, ..., typen argn) {
+ *             // n arguments
+ *             // valid Java code to execute
+ *             // This method returns an object of type 'return_type'
+ *             return null;
+ *         }
+ *
+ *         struct structID {
+ *             // A generic struct with no instance elements or constructors
+ *             // If no constructor is defined, a default one will be generated
+ *         }
+ *
+ *         init structID(..) {
+ *             // Constructor: a special case of method declaration
+ *             // Return type: 'init'
+ *             // Method id: the struct id whose constructor this is
+ *         }
+ */
+int randomVar = 5;
+
+void doNothing() {
+    // Do nothing if this method is called
 }
 
-return_type helperMethod() {
-  *code*
+struct Empty {
+    // This struct has no instance elements
+
+    init Empty() {
+        // Do nothing in this constructor
+    }
 }
 
-struct struct_name_id {
-  var_type var_id1, var_id2;
+/*
+MIT License
 
-  ret1 method1() {
-    int i = 0; return i < 10;
-  }
-  ret2 method2() {
-  }
-}
+Copyright (c) 2020 Utkarsh Priyam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/

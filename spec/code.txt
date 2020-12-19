@@ -1,0 +1,18 @@
+/*
+ * Inside code blocks (for method/hook/variable definitions),
+ * you can use a few directive macros:
+ *  - $PATH gives a relative path for this script file
+ *  - $getRelative(..) converts the given file path from one
+ *                     relative to this script file to a
+ *                     relative path that can be used by Java
+ *                     for loading other files
+ *  - $ifIncluded(..) compiles the code enclosed in {} if and
+ *                    only if the specified id is valid from
+ *                    an #include statement in this script file
+ *  - $ifNotIncluded(..) compiles the enclosed code if the id
+ *                       is not valid -> see $ifIncluded(..)
+ */
+
+/*
+ * Inside code blocks, you can reference
+ */

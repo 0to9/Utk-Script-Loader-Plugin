@@ -1,6 +1,7 @@
 // beware lack of auto boxing/unboxing
 // beware lack of parameterization/generics
 // beware lack of varargs/variable arguments
+/* also you can use multiline comments */
 
 #include me "test.txt"
 
@@ -11,7 +12,7 @@ import java.util;
 }
 
 void helperMethod() {
-  if ($isIncluded(me)) {
+  $ifIncluded(me) {
     System.out.println($PATH);
     System.out.println($getRelative("./random/../file_path/../../to/know-where"));
   }

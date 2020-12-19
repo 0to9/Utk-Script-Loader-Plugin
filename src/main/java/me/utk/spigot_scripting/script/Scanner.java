@@ -94,13 +94,37 @@ public class Scanner {
             else /* if (currentChar == '/') */ {
                 r = lineNum;
                 c = index;
-                if (nextChar() == '/')
-                    while (nextChar() != '\n') /* Do Nothing */ ;
-                else {
-                    builder.append('/');
-                    while (!isWhiteSpace(nextChar()) && !isSingleChar(currentChar))
-                        builder.append(currentChar);
-                    return new Token(builder.toString(), r, c);
+                switch (nextChar()) {
+                    case '/':
+                        while (nextChar() != '\n') /* Do Nothing */ ;
+                        break;
+
+                    case '*':
+                        boolean commentOver = false, justSawAsterisk = false;
+                        while (!commentOver)
+                            switch (nextChar()) {
+                                case '/':
+                                    commentOver = justSawAsterisk;
+                                    break;
+
+                                case '*':
+                                    justSawAsterisk = true;
+                                    break;
+
+                                default:
+                                    justSawAsterisk = false;
+                                    break;
+                            }
+                        nextChar();
+                        break;
+
+                    default:
+                        builder.append('/');
+                        while (!isWhiteSpace(currentChar) && !isSingleChar(currentChar)) {
+                            builder.append(currentChar);
+                            nextChar();
+                        }
+                        return new Token(builder.toString(), r, c);
                 }
             }
 
@@ -112,13 +136,22 @@ public class Scanner {
             return new Token("" + oldChar, lineNum, index);
         }
 
-
-
         r = lineNum;
         c = index;
+
         builder.append(currentChar);
-        while (!isWhiteSpace(nextChar()) && !isSingleChar(currentChar))
+        if (currentChar == '"' || currentChar == '\'') {
+            char startChar = currentChar;
+            while (nextChar() != startChar) {
+                builder.append(currentChar);
+                if (currentChar == '\\')
+                    builder.append(nextChar());
+            }
             builder.append(currentChar);
+            nextChar();
+        } else
+            while (!isWhiteSpace(nextChar()) && !isSingleChar(currentChar))
+                builder.append(currentChar);
         return new Token(builder.toString(), r, c);
     }
 

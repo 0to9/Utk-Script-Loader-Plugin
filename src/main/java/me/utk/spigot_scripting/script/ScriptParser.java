@@ -23,7 +23,7 @@ public class ScriptParser {
             try {
                 populateScript(script);
             } catch (ParsingException e) {
-                e.printStackTrace();
+                SCRIPTS_PARSED.remove(filePath);
                 throw new ParsingException(e.getMessage() + " in \"" + filePath + "\"");
             }
         }

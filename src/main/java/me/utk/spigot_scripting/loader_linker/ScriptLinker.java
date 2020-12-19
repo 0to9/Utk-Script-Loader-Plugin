@@ -216,7 +216,7 @@ public class ScriptLinker {
         COMMAND_ARGUMENTS_MAP.put("args", 2);
     }
     private static void defineCommandMethod(Command command, CtMethod method, Script script,
-                                         Map<DataHolder, Pair<String, CtClass>> classMap) throws Exception {
+                                            Map<DataHolder, Pair<String, CtClass>> classMap) throws Exception {
 
         String code = resolveCode(command.JAVA_CODE, script, classMap, COMMAND_ARGUMENTS_MAP);
         method.setBody(code);
@@ -271,29 +271,63 @@ public class ScriptLinker {
                         case "getRelative":
                             builder.append(FileUtil.PATH + ".cleanFilePath");
 
-                            while (!(tok = st.nextToken()).equals("("))
-                                builder.append(tok);
-                            builder.append(tok);
+                            check(st, " ", script, "getRelative");
+                            check(st, "(", script, "getRelative");
+                            check(st, " ", script, "getRelative");
 
-                            builder.append("\"");
+                            builder.append("(\"");
                             builder.append(FileUtil.getParentDirectory(script.FILE_PATH));
                             builder.append("\" + ");
                             // rest of switch case can handle strings
                             break;
 
-                        case "isIncluded":
-                            while (!(tok = st.nextToken()).equals("("))
-                                builder.append(tok);
-                            builder.append(tok);
+                        case "ifIncluded":
+                        case "ifNotIncluded":
+                            String directiveID = tok;
+                            check(st, " ", script, directiveID);
+                            check(st, "(", script, directiveID);
+                            check(st, " ", script, directiveID);
+                            boolean codeIsIncluded = script.INCLUDED_SCRIPTS.containsKey(st.nextToken());
+                            check(st, " ", script, directiveID);
+                            check(st, ")", script, directiveID);
+                            check(st, " ", script, directiveID);
+                            check(st, "{", script, directiveID);
 
-                            if (!" ".equals(st.nextToken()))
-                                throw new CompilingException("Script in \"" + script.FILE_PATH + "\" has a " +
-                                        "incorrectly formatted '$isIncluded' directive");
-                            builder.append(script.INCLUDED_SCRIPTS.containsKey(st.nextToken())); // scriptID
+                            if (codeIsIncluded == directiveID.equals("ifIncluded")) {
+                                StringBuilder helper = new StringBuilder();
+                                int braceCount = 1;
+                                while (braceCount > 0) {
+                                    switch (tok = st.nextToken()) {
+                                        case "{":
+                                            braceCount++;
+                                            break;
 
-                            while (!(tok = st.nextToken()).equals(")"))
-                                builder.append(tok);
-                            builder.append(tok);
+                                        case "}":
+                                            braceCount--;
+                                            break;
+
+                                        default:
+                                            break;
+                                    }
+                                    helper.append(tok);
+                                }
+                                builder.append(resolveCode(helper.substring(0, helper.length() - 1), script, classMap, paramMap));
+                            } else {
+                                int braceCount = 1;
+                                while (braceCount > 0)
+                                    switch (st.nextToken()) {
+                                        case "{":
+                                            braceCount++;
+                                            break;
+
+                                        case "}":
+                                            braceCount--;
+                                            break;
+
+                                        default:
+                                            break;
+                                    }
+                            }
                             break;
 
                         default:
@@ -323,6 +357,12 @@ public class ScriptLinker {
             }
         }
         return builder.toString();
+    }
+
+    private static void check(Tokenizer tok, String target, Script script, String directiveID) {
+        if (!target.equals(tok.nextToken()))
+            throw new CompilingException("Script in \"" + script.FILE_PATH + "\" has a " +
+                    "incorrectly formatted '$" + directiveID + "' directive");
     }
 
     private static String resolveReference(String ref, Script script, Map<DataHolder, Pair<String, CtClass>> classMap) {

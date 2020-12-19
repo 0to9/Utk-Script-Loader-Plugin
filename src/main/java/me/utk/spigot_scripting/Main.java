@@ -7,6 +7,10 @@ import me.utk.spigot_scripting.event.EventsUtil;
 import me.utk.spigot_scripting.event.ScriptInitializationWrapper;
 import me.utk.spigot_scripting.loader_linker.ScriptLinker;
 import me.utk.spigot_scripting.loader_linker.ScriptLoader;
+import me.utk.spigot_scripting.script.Scanner;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -43,8 +47,8 @@ public class Main {
 //        Helper.run();
 
         // Start script processing
-//        ScriptLoader.loadScript("scripts/main.txt");
-        ScriptLoader.loadScript("test.txt");
+        ScriptLoader.loadScript("scripts/main.txt");
+//        ScriptLoader.loadScript("test.txt");
         ScriptLinker.linkScripts();
         EventsUtil.loadAndInitializeEventClassChanges();
         CommandUtil.loadAndInitializeSubCommandHandler();

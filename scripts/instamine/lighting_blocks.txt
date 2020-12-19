@@ -1,32 +1,15 @@
 // Instamine Lighting Blocks module
 // DO NOT MODIFY THIS SCRIPT FILE
 // @author utk003
-// @version 12/17/20
-
-#include instamine "../instamine.txt"
+// @version 12/18/20
 
 import java.util;
 
-import org.bukkit;
-import org.bukkit.block;
-import org.bukkit.event.block;
-import org.bukkit.event.player;
+import org.bukkit.Material;
 
-@PlayerInteract : {
-    PlayerInteractEvent event = wrapper.getEvent();
-    if (event.getAction() != Action.LEFT_CLICK_BLOCK)
-        return;
-
-    Block block = event.getClickedBlock();
-    if (block == null)
-        return;
-
-    if (validTypes.contains(block.getType()))
-        // require Haste 2 and Efficiency 5 on tool (the last two arguments)
-        instamine::breakBlock(block, event.getPlayer(), validTools, 2, 5);
-}
-
+int minHaste = 2, minEfficiency = 5;
 Set validTypes = new HashSet(), validTools = new HashSet();
+
 @Init : {
     // All valid blocks --> Allow only select lighting blocks for this module
     validTypes.add(Material.SEA_LANTERN);
