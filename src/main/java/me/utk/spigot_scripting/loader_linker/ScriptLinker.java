@@ -197,10 +197,11 @@ public class ScriptLinker {
 
     private static void defineMethod(Function func, CtBehavior method, Script script,
                                      Map<DataHolder, Pair<String, CtClass>> classMap) throws Exception {
-        String[] args = func.ARGUMENTS.trim().split(" ");
+        String[] args = func.ARGUMENTS.split(" ");
         Map<String, Integer> paramMap = new HashMap<>(args.length / 2);
         for (int i = 2; i < args.length; i += 3) // param id is every third element
             paramMap.put(args[i], i / 3 + 1);
+
         String code = resolveCode(func.JAVA_CODE, script, classMap, paramMap);
         method.setBody(code);
     }
@@ -258,7 +259,9 @@ public class ScriptLinker {
         // TODO better resolution system that can deal with stuff stuck together (like blah::blah+=blah)
         StringBuilder builder = new StringBuilder();
         Tokenizer st = new Tokenizer(code);
+        Boolean prevParsedInclusionState = null;
         while (st.hasMoreTokens()) {
+            Boolean currParsedInclusionState = null;
             String token = st.nextToken();
             switch (token) {
                 case "$":
@@ -283,17 +286,25 @@ public class ScriptLinker {
 
                         case "ifIncluded":
                         case "ifNotIncluded":
-                            String directiveID = tok;
-                            check(st, " ", script, directiveID);
-                            check(st, "(", script, directiveID);
-                            check(st, " ", script, directiveID);
-                            boolean codeIsIncluded = script.INCLUDED_SCRIPTS.containsKey(st.nextToken());
-                            check(st, " ", script, directiveID);
-                            check(st, ")", script, directiveID);
-                            check(st, " ", script, directiveID);
-                            check(st, "{", script, directiveID);
+                            check(st, " ", script, tok);
+                            check(st, "(", script, tok);
+                            check(st, " ", script, tok);
+                            boolean scriptIsIncluded = script.INCLUDED_SCRIPTS.containsKey(st.nextToken());
+                            check(st, " ", script, tok);
+                            check(st, ")", script, tok);
 
-                            if (codeIsIncluded == directiveID.equals("ifIncluded")) {
+                            // hack to reuse code inclusion code from $else
+                            currParsedInclusionState = scriptIsIncluded == tok.equals("ifIncluded");
+                            prevParsedInclusionState = currParsedInclusionState;
+
+                        case "else":
+                            check(st, " ", script, tok);
+                            check(st, "{", script, tok);
+
+                            if (prevParsedInclusionState == null)
+                                throw new CompilingException("Script in \"" + script.FILE_PATH + "\" has a " +
+                                        "dangling $else directive");
+                            if (prevParsedInclusionState) {
                                 StringBuilder helper = new StringBuilder();
                                 int braceCount = 1;
                                 while (braceCount > 0) {
@@ -328,6 +339,7 @@ public class ScriptLinker {
                                             break;
                                     }
                             }
+                            check(st, " ", script, tok);
                             break;
 
                         default:
@@ -355,6 +367,8 @@ public class ScriptLinker {
                     builder.append(token.equals(t2) && mapping != null ? "$" + mapping : t2);
                     break;
             }
+            // boolean for $else support/handling
+            prevParsedInclusionState = currParsedInclusionState == null ? null : !currParsedInclusionState;
         }
         return builder.toString();
     }

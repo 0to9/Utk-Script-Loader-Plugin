@@ -25,6 +25,7 @@ public abstract class EventsUtil {
          */
         // Base script-related events
         addClassToMap("Init", "", "ScriptInitializationWrapper");
+        addClassToMap("Exit", "", "ScriptTerminationWrapper");
 
         // Spigot events
         addClassToMap("PlayerInteract", "spigot.player", "PlayerInteractWrapper");

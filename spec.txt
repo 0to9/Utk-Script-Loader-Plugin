@@ -172,7 +172,7 @@ import java.util; // import all classes from the 'java.util' package
  *             // See the method definition documentation for more details
  *             // Command executor methods are void, so nothing is returned
  *         }
- *         $exec commandID : {
+ *         $comp commandID : {
  *             // 2 arguments: (CommandSender sender, String[] args)
  *
  *             // valid Java code to execute

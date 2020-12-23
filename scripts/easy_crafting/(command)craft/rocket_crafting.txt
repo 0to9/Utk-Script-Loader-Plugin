@@ -1,0 +1,86 @@
+/*
+ * This is the script file for the rocket crafting module of the /craft command.
+ * This module allows players to craft all paper and gunpowder present in their
+ * inventory directly into firework rockets of the specified power level.
+ *
+ * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+ * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+ * Ignore this warning only if you have read the scripting language specifications
+ * thoroughly and are confident in your abilities to successfully modify the script.
+ *
+ * @author Utkarsh Priyam
+ * @version December 22, 2020
+ */
+
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT
+// (see warning in the file header comment)
+
+#include craft_command "../(command)craft.txt"
+
+import org.bukkit;
+import org.bukkit.entity;
+import org.bukkit.inventory;
+import org.bukkit.inventory.meta;
+
+void handleCraft(Player player, PlayerInventory inventory, World playerWorld, Location playerLocation, String[] args) {
+    if (args.length == 1) {
+        player.sendMessage("Specify firework rocket target power level.");
+        return;
+    }
+
+    int power;
+    switch (args[1]) {
+        case "1":
+            power = 1;
+            break;
+
+        case "2":
+            power = 2;
+            break;
+
+        case "3":
+            power = 3;
+            break;
+
+        default:
+            player.sendMessage("Please enter a valid firework rocket target power level.");
+            return;
+    }
+
+    int paper = 0, gunpowder = 0;
+
+    ItemStack[] inventoryContents = inventory.getContents();
+    for (int index = 0; index < inventoryContents.length; index++) {
+        if (inventoryContents[index] == null);
+        else if (inventoryContents[index].getType() == Material.PAPER) {
+            paper += inventoryContents[index].getAmount();
+            inventory.clear(index);
+        } else if (inventoryContents[index].getType() == Material.GUNPOWDER) {
+            gunpowder += inventoryContents[index].getAmount();
+            inventory.clear(index);
+        }
+    }
+
+    int rocketsToMake = 3 * Math.min(gunpowder / power, paper);
+
+    ItemStack rocketStack = new ItemStack(Material.FIREWORK_ROCKET);
+    FireworkMeta fireworkMeta = (FireworkMeta) rocketStack.getItemMeta();
+    if (fireworkMeta == null) {
+        player.sendMessage("The rocket module of the \"craft\" sub-command is currently broken.");
+
+        craft_command::addToInventory(new ItemStack(Material.PAPER), paper, inventory, playerWorld, playerLocation);
+        craft_command::addToInventory(new ItemStack(Material.GUNPOWDER), gunpowder, inventory, playerWorld, playerLocation);
+        return;
+    }
+    fireworkMeta.setPower(power);
+    rocketStack.setItemMeta(fireworkMeta);
+
+    craft_command::addToInventory(rocketStack, rocketsToMake, inventory, playerWorld, playerLocation);
+
+    rocketsToMake /= 3;
+    paper -= rocketsToMake;
+    gunpowder -= rocketsToMake * power;
+
+    craft_command::addToInventory(new ItemStack(Material.PAPER), paper, inventory, playerWorld, playerLocation);
+    craft_command::addToInventory(new ItemStack(Material.GUNPOWDER), gunpowder, inventory, playerWorld, playerLocation);
+}

@@ -1,0 +1,38 @@
+/*
+ * This is the script file for the paper crafting module of the /craft command.
+ * This module allows players to craft all sugarcane present in their inventory
+ * directly into paper using the 3:3 sugarcane to paper recipe.
+ *
+ * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+ * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+ * Ignore this warning only if you have read the scripting language specifications
+ * thoroughly and are confident in your abilities to successfully modify the script.
+ *
+ * @author Utkarsh Priyam
+ * @version December 22, 2020
+ */
+
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT
+// (see warning in the file header comment)
+
+#include craft_command "../(command)craft.txt"
+
+import org.bukkit;
+import org.bukkit.inventory;
+
+void handleCraft(PlayerInventory inventory, World playerWorld, Location playerLocation) {
+    int sugarcaneCount = 0;
+
+    ItemStack[] inventoryContents = inventory.getContents();
+    for (int index = 0; index < inventoryContents.length; index++)
+        if (inventoryContents[index] != null && inventoryContents[index].getType() == Material.SUGAR_CANE) {
+            sugarcaneCount += inventoryContents[index].getAmount();
+            inventory.clear(index);
+        }
+
+    int paperToMake = sugarcaneCount - sugarcaneCount % 3;
+    craft_command::addToInventory(new ItemStack(Material.PAPER), paperToMake, inventory, playerWorld, playerLocation);
+
+    sugarcaneCount %= 3;
+    craft_command::addToInventory(new ItemStack(Material.SUGAR_CANE), sugarcaneCount, inventory, playerWorld, playerLocation);
+}

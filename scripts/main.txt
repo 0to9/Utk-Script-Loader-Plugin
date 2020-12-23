@@ -10,11 +10,12 @@
  * thoroughly and are confident in your abilities to successfully modify the script.
  *
  * @author Utkarsh Priyam
- * @version December 18, 2020
+ * @version December 21, 2020
  */
 
 // Comment any modules you don't want activated
-#include instamine "instamine.txt"
+#include instamine      "instamine.txt"
+#include easy_crafting  "easy_crafting.txt"
 
 /*
 MIT License

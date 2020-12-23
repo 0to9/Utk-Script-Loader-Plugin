@@ -13,6 +13,7 @@ public class Script extends DataHolder {
         FILE_PATH = filePath;
         UNIQUE_SCRIPT_ID = filePath.replaceAll("\\.txt", "")    // remove .txt from end
                 .replaceAll("[.]", "dOt")                       // replace all .s with 'dOt'
+                .replaceAll("/", "_sLaSh_")                     // replace all /s with '_sLaSh_'
                 .replaceAll("[^\\w]", "_");                     // remove all non-word characters
     }
 

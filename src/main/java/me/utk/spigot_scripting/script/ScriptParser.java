@@ -170,22 +170,38 @@ public class ScriptParser {
         return builder.toString();
     }
 
+    private static boolean takesSpace(char c) {
+        return 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || c == '_' || c == ',' || c == ')';
+    }
     private static String parseArguments(Scanner scanner) {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(), helper = new StringBuilder();
 
-        int braceCount = 0;
-        String currentToken;
+        builder.append("( ");
+        eat(scanner, "(");
+
+        String currentToken = currentToken(scanner);
+        if (currentToken.equals(")")) {
+            eat(scanner, ")");
+            return "()";
+        }
+        String prevToken = "";
         do {
-            currentToken = currentToken(scanner);
+            if (currentToken.equals(",")) {
+                builder.append(helper).append(" ").append(prevToken);
+                builder.append(" , ");
 
-            if (currentToken.equals("("))
-                braceCount++;
-            else if (currentToken.equals(")"))
-                braceCount--;
-
-            builder.append(" ").append(currentToken);
+                prevToken = "";
+                helper = new StringBuilder();
+            } else {
+                helper.append(prevToken);
+                prevToken = currentToken;
+            }
             eat(scanner, currentToken);
-        } while (braceCount > 0);
+        } while (!(currentToken = currentToken(scanner)).equals(")"));
+
+        builder.append(helper).append(" ").append(prevToken).append(" )");
+        eat(scanner, ")");
+
         return builder.toString();
     }
 

@@ -10,8 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.io.*;
-
 public class Test {
     public static void main(String[] args) {
     }
@@ -64,10 +62,12 @@ public class Test {
             case WHITE_STAINED_GLASS:
             case WHITE_STAINED_GLASS_PANE:
             case YELLOW_STAINED_GLASS:
-            case YELLOW_STAINED_GLASS_PANE: return 1;
+            case YELLOW_STAINED_GLASS_PANE:
+                return 1;
 
             case SPONGE:
-            case WET_SPONGE: return 2;
+            case WET_SPONGE:
+                return 2;
 
             case CYAN_CONCRETE:
             case BLACK_CONCRETE:
@@ -84,7 +84,8 @@ public class Test {
             case PURPLE_CONCRETE:
             case RED_CONCRETE:
             case WHITE_CONCRETE:
-            case YELLOW_CONCRETE: return 3;
+            case YELLOW_CONCRETE:
+                return 3;
 
             case ACACIA_LOG:
             case BIRCH_LOG:
@@ -125,7 +126,8 @@ public class Test {
             // Add Stone Products // return 6
 
             case PISTON:
-            case STICKY_PISTON: return 7;
+            case STICKY_PISTON:
+                return 7;
 
             case SEA_LANTERN:
             case GLOWSTONE:
@@ -145,7 +147,8 @@ public class Test {
             case BONE_BLOCK:
                 return 9;
 
-            default: return -1;
+            default:
+                return -1;
         }
     }
 }
