@@ -161,7 +161,7 @@ import java.util; // import all classes from the 'java.util' package
  * These sub-commands can be called by providing the sub-command as
  * the first argument to these three main commands.
  *
- * Note that all arguments and command IDs are case-insensitive.
+ * Note that all command arguments and IDs are case-insensitive.
  * By default, everything will be provided to the executor and tab
  * completer methods in lowercase.
  *

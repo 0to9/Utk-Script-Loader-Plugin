@@ -5,6 +5,7 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import me.utk.spigot_scripting.util.ErrorLogger;
 import me.utk.spigot_scripting.util.FileUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Method;
@@ -73,18 +74,14 @@ public abstract class CommandUtil {
         }
     }
 
-    public static void sendMessage(CommandSender sender, String... message) {
+    public static void sendMessage(CommandSender sender, String message) {
         sender.sendMessage(message);
     }
-    public static void sendErrorMessage(CommandSender sender, String... message) {
-        // TODO add color to sender error message
-        sender.sendMessage(message);
+    public static void sendWarningMessage(CommandSender sender, String message) {
+        sender.sendMessage(ChatColor.GOLD + message); // TODO choose gold (= orange) or yellow
     }
-
-    public static String[] argsToLowerCase(String... args) {
-        for (int i = 0; i < args.length; i++)
-            args[i] = args[i].toLowerCase();
-        return args;
+    public static void sendErrorMessage(CommandSender sender, String message) {
+        sender.sendMessage(ChatColor.RED + message);
     }
 
     public static List<String> purgeCompletions(String currentInput, List<String> completions) {

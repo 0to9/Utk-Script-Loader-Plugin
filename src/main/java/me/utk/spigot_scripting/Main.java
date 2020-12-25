@@ -13,7 +13,7 @@ public class Main {
         CtClass.debugDump = "dump";
 
         // Start script processing
-        ScriptLoader.loadScript("scripts/main.txt");
+        ScriptLoader.loadScript("src/main/resources/scripts/main.txt"); // temporary file path
         ScriptLinker.linkScripts();
         EventsUtil.loadAndInitializeEventClassChanges();
         CommandUtil.loadAndInitializeSubCommandHandler();
