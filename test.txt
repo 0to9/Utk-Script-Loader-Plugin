@@ -8,45 +8,45 @@
 import java.util;
 
 @Init : {
-  helperMethod();
+    helperMethod();
 }
 
 void helperMethod() {
-  $ifIncluded(me) {
-    System.out.println($PATH);
-    System.out.println($getRelative("./random/../file_path/../../to/know-where"));
-  }
+    $ifIncluded(me) {
+        System.out.println($PATH);
+        System.out.println($getRelative("./random/../file_path/../../to/know-where"));
+    }
 }
 
 $exec command : {
-  // do nothing
+    // do nothing
 }
 
 $comp command : {
-  // do nothing
-  return null;
+    // do nothing
+    return null;
 }
 
 struct Obj {
-  ArrayList ints = new ArrayList(10);
+    ArrayList ints = new ArrayList(10);
 
-  init Obj() {
-    for (int i = 0; i < 7; i++)
-      ints.add(new Integer(i));
-  }
-
-  int twist() {
-    ArrayList next = new ArrayList(10);
-    int sum = 0;
-    int prev = 0;
-    int curr;
-    for (int i = 0; i < ints.size(); i++) {
-      curr = ((Integer) ints.get(i)).intValue();
-      next.add(new Integer(prev + curr));
-      sum += prev + curr;
-      prev = curr;
+    init Obj() {
+        for (int i = 0; i < 7; i++)
+            ints.add(new Integer(i));
     }
-    ints = next;
-    return sum;
-  }
+
+    int twist() {
+        ArrayList next = new ArrayList(10);
+        int sum = 0;
+        int prev = 0;
+        int curr;
+        for (int i = 0; i < ints.size(); i++) {
+            curr = ((Integer) ints.get(i)).intValue();
+            next.add(new Integer(prev + curr));
+            sum += prev + curr;
+            prev = curr;
+        }
+        ints = next;
+        return sum;
+    }
 }

@@ -11,6 +11,7 @@ import me.utk.spigot_scripting.util.exception.CompilingException;
 import me.utk.spigot_scripting.util.exception.LinkingException;
 import me.utk.util.data.Pair;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,21 +19,23 @@ import java.util.Map;
 public class ScriptLinker {
     public static final String GENERATED_CLASSES_PACKAGE = FileUtil.PROJECT_CLASS_PATH + "loaded";
 
+    public static final Map<CtClass, Class<?>> CLASS_CLASS_MAP = new HashMap<>();
+
     public static void linkScripts() {
         try {
-            ScriptLoader.SCRIPT_LOCKER.acquire();
-
             Map<DataHolder, Pair<String, CtClass>> classMap = new HashMap<>();
             Map<CodeHolder, CtMember> memberMap = new HashMap<>();
 
-            ClassPool classPool = ClassPool.getDefault();
+            Collection<Script> scriptsParsed = ScriptParser.scriptsParsed();
+
+            ClassPool classPool = CustomClassPool.getDefault();
             for (String pack : ScriptParser.IMPORTED_PACKAGES)
                 classPool.importPackage(pack);
             for (String pack : EventsUtil.EVENT_PACKAGES)
                 classPool.importPackage(pack);
             classPool.importPackage(ScriptLinker.GENERATED_CLASSES_PACKAGE);
 
-            for (Script script : ScriptLoader.LOADED_SCRIPTS) {
+            for (Script script : scriptsParsed) {
                 // Define script
                 String classPath = GENERATED_CLASSES_PACKAGE + "." + script.UNIQUE_SCRIPT_ID;
                 classMap.put(script, new Pair<>(script.UNIQUE_SCRIPT_ID, classPool.makeClass(classPath)));
@@ -43,7 +46,7 @@ public class ScriptLinker {
                     classMap.put(e.getValue(), new Pair<>(p2, classPool.makeClass(p1)));
                 }
             }
-            for (Script script : ScriptLoader.LOADED_SCRIPTS) {
+            for (Script script : scriptsParsed) {
                 // Declare script (static) methods
                 for (Map.Entry<String, Function> e : script.DEFINED_FUNCTIONS.entrySet())
                     memberMap.put(e.getValue(), getMethod(e.getValue(), e.getKey(), script, script, classMap));
@@ -61,7 +64,7 @@ public class ScriptLinker {
                 for (Command command : script.COMMAND_HANDLERS)
                     memberMap.put(command, getCommandMethod(command, script, classMap));
             }
-            for (Script script : ScriptLoader.LOADED_SCRIPTS) {
+            for (Script script : scriptsParsed) {
                 // Declare and define script (static) methods
                 for (Map.Entry<String, Variable> e : script.DEFINED_VARIABLES.entrySet())
                     memberMap.put(e.getValue(), getField(e.getValue(), e.getKey(), script, script, classMap));
@@ -71,7 +74,7 @@ public class ScriptLinker {
                     for (Map.Entry<String, Variable> e : struct.DEFINED_VARIABLES.entrySet())
                         memberMap.put(e.getValue(), getField(e.getValue(), e.getKey(), script, struct, classMap));
             }
-            for (Script script : ScriptLoader.LOADED_SCRIPTS) {
+            for (Script script : scriptsParsed) {
                 // Define script (static) methods
                 for (Map.Entry<String, Function> e : script.DEFINED_FUNCTIONS.entrySet())
                     defineMethod(e.getValue(), (CtBehavior) memberMap.get(e.getValue()), script, classMap);
@@ -89,10 +92,12 @@ public class ScriptLinker {
                 for (Command command : script.COMMAND_HANDLERS)
                     defineCommandMethod(command, (CtMethod) memberMap.get(command), script, classMap);
             }
-            for (Pair<String, CtClass> pair : classMap.values())
-                pair.second.toClass();
 
-            ScriptLoader.SCRIPT_LOCKER.release();
+            // Load all created classes
+            for (Pair<String, CtClass> pair : classMap.values()) {
+                CLASS_CLASS_MAP.put(pair.second, pair.second.toClass());
+                pair.second.detach();
+            }
         } catch (Exception e) {
             ErrorLogger.logError(() -> "Encountered an error while linking scripts", e);
         }
@@ -124,11 +129,11 @@ public class ScriptLinker {
         String hookMethodName = "hoooooookOn" + hook.HOOK_ID;
 
         CtMethod method = CtNewMethod.make("public static void " + hookMethodName +
-                "(" + EventsUtil.getEventClassName(hook.HOOK_ID) + " event) { }", classMap.get(script).second);
+                "(EventWrapper wrapper) { }", classMap.get(script).second);
 
         Pair<String, CtClass> holder = classMap.get(script);
         holder.second.addMethod(method);
-        EventsUtil.addHandlerCodeToEventHandler(hook.HOOK_ID, holder.first + "." + hookMethodName);
+        EventsUtil.addEventHandler(hook.HOOK_ID, holder.second, hookMethodName);
 
         return method;
     }
@@ -151,11 +156,10 @@ public class ScriptLinker {
 
         Pair<String, CtClass> holder = classMap.get(script);
         holder.second.addMethod(method);
-        String methodCallCode = holder.first + "." + commandMethodName;
         if (command.IS_EXECUTOR)
-            CommandUtil.addSubCommandExecutor(command.COMMAND_ID, methodCallCode);
+            CommandUtil.addSubCommandExecutor(command.COMMAND_ID, holder.second, commandMethodName);
         else
-            CommandUtil.addSubCommandTabCompleter(command.COMMAND_ID, methodCallCode);
+            CommandUtil.addSubCommandTabCompleter(command.COMMAND_ID, holder.second, commandMethodName);
 
         return method;
     }

@@ -7,14 +7,19 @@ import me.utk.spigot_scripting.util.exception.ParsingException;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ScriptParser {
     private static final Map<String, Script> SCRIPTS_PARSED = new HashMap<>();
     public static final Set<String> IMPORTED_PACKAGES = new HashSet<>();
+
+    public static void resetScripts() {
+        SCRIPTS_PARSED.clear();
+        IMPORTED_PACKAGES.clear();
+    }
+    public static Collection<Script> scriptsParsed() {
+        return SCRIPTS_PARSED.values();
+    }
 
     public static Script parseScript(String filePath) throws FileNotFoundException {
         Script script = SCRIPTS_PARSED.get(filePath);

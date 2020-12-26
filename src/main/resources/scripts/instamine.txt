@@ -53,7 +53,7 @@ import org.bukkit.potion;
  * to prevent block duping by poorly written module scripts.
  */
 @PlayerInteract : {
-    PlayerInteractEvent event = wrapper.getEvent();
+    PlayerInteractEvent event = (PlayerInteractEvent) wrapper.getEvent();
     if (event.getAction() != Action.LEFT_CLICK_BLOCK)
         return;
 

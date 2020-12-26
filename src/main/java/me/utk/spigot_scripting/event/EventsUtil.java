@@ -1,10 +1,10 @@
 package me.utk.spigot_scripting.event;
 
-import javassist.ClassPool;
 import javassist.CtClass;
-import javassist.CtMethod;
+import me.utk.spigot_scripting.loader_linker.ScriptLinker;
 import me.utk.spigot_scripting.util.ErrorLogger;
 import me.utk.spigot_scripting.util.FileUtil;
+import me.utk.spigot_scripting.util.reflection.ReflectiveInitializer;
 import me.utk.util.data.Pair;
 
 import java.lang.reflect.Method;
@@ -50,41 +50,30 @@ public abstract class EventsUtil {
         return EVENT_ID_TO_PACKAGES_MAP.get(eventID).second;
     }
 
-    public static void addHandlerCodeToEventHandler(String eventID, String handlerMethodCode) throws Exception {
-        ClassPool defaultPool = ClassPool.getDefault();
-
+    public static void addEventHandler(String eventID, CtClass handlerClass, String methodID) throws Exception {
         String fullClassName = getFullyQualifiedPackagePath(eventID);
-        CtClass eventClass = defaultPool.get(fullClassName);
-
-        CtMethod initializeMethod = eventClass.getDeclaredMethod("initialize", new CtClass[0]);
-        initializeMethod.insertAfter("FAILURE_COUNTS.add(new me.utk.util.data.ClassWrapper(new Integer(0)));");
-
-        CtClass itClass = defaultPool.get("java.util.Iterator");
-        CtMethod handlerMethod = eventClass.getDeclaredMethod("notifyHandlers", new CtClass[]{eventClass, itClass});
-        String code = "{\n" +
-                "          me.utk.util.data.ClassWrapper numFailures = (me.utk.util.data.ClassWrapper) $2.next();\n" +
-                "          int failures = ((Integer) numFailures.value).intValue();\n" +
-                "          if (failures < 10)\n" +
-                "              try {\n" +
-                "                  " + handlerMethodCode + "($1);\n" +
-                "              } catch (Exception e) {\n" +
-                "                  numFailures.value = new Integer(failures + 1);\n" +
-                "              }\n" +
-                "      }";
-        handlerMethod.insertAfter(code);
+        Class<?> clazz = Class.forName(fullClassName);
+        Method adder = clazz.getMethod("addHandler", ReflectiveInitializer.class);
+        adder.invoke(null, (ReflectiveInitializer<Method>) () -> {
+            Class<?> finalClass = ScriptLinker.CLASS_CLASS_MAP.get(handlerClass);
+            return finalClass.getMethod(methodID, EventWrapper.class);
+        });
     }
 
-    public static void loadAndInitializeEventClassChanges() {
-        ClassPool defaultPool = ClassPool.getDefault();
+    public static void initializeEventWrappers() {
+        runMethodOnEventWrappers("initialize");
+    }
+    public static void terminateEventWrappers() {
+        runMethodOnEventWrappers("terminate");
+    }
+    private static void runMethodOnEventWrappers(String methodID) {
         for (String eventID : EVENT_ID_TO_PACKAGES_MAP.keySet())
             try {
-                CtClass eventCtClass = defaultPool.get(getFullyQualifiedPackagePath(eventID));
-                Class<?> eventClass = eventCtClass.toClass();
-
-                Method initMethod = eventClass.getMethod("initialize");
+                Class<?> eventClass = Class.forName(getFullyQualifiedPackagePath(eventID));
+                Method initMethod = eventClass.getMethod(methodID);
                 initMethod.invoke(null);
             } catch (Exception e) {
-                ErrorLogger.logError(() -> "Unable to initialize " + getEventClassName(eventID) + " handler class", e);
+                ErrorLogger.logError(() -> "Unable to " + methodID + " " + getEventClassName(eventID) + " handler class", e);
             }
     }
 }

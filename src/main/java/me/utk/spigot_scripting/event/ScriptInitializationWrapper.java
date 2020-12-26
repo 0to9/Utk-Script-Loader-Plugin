@@ -1,31 +1,33 @@
 package me.utk.spigot_scripting.event;
 
-import me.utk.spigot_scripting.event.spigot.player.PlayerInteractWrapper;
-import org.bukkit.event.player.PlayerInteractEvent;
+import me.utk.spigot_scripting.util.reflection.ReflectiveInitializer;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.lang.reflect.Method;
 
-@SuppressWarnings("rawtypes")
-public class ScriptInitializationWrapper {
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private static final List FAILURE_COUNTS = new LinkedList();
-    private static boolean isInitialized = false;
+public class ScriptInitializationWrapper extends EventWrapper<EventWrapper.NoEvent> {
+    private static final ScriptInitializationWrapper INSTANCE = new ScriptInitializationWrapper(null);
 
-    public static void handleEvent() {
-        @SuppressWarnings("InstantiationOfUtilityClass")
-        ScriptInitializationWrapper wrapper = new ScriptInitializationWrapper();
-        if (isInitialized)
-            notifyHandlers(wrapper, FAILURE_COUNTS.iterator());
+    private ScriptInitializationWrapper(NoEvent event) {
+        super(event);
     }
 
-    private static void notifyHandlers(ScriptInitializationWrapper wrapper, Iterator it) {
+    @Override
+    protected EventWrapper<NoEvent> getInstance(NoEvent event) {
+        return new ScriptInitializationWrapper(event);
+    }
+
+    public static void handleEvent() {
+        INSTANCE.handleEvent0(NoEvent.EVENT_INSTANCE);
+    }
+
+    public static void addHandler(ReflectiveInitializer<Method> handlerInit) {
+        INSTANCE.INITIALIZERS.add(handlerInit);
     }
 
     public static void initialize() {
-        if (isInitialized)
-            return;
-        isInitialized = true;
+        INSTANCE.initialize0();
+    }
+    public static void terminate() {
+        INSTANCE.terminate0();
     }
 }

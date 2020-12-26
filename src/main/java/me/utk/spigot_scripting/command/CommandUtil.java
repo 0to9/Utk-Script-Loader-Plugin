@@ -1,10 +1,10 @@
 package me.utk.spigot_scripting.command;
 
-import javassist.ClassPool;
 import javassist.CtClass;
-import javassist.CtMethod;
-import me.utk.spigot_scripting.util.ErrorLogger;
-import me.utk.spigot_scripting.util.FileUtil;
+import me.utk.spigot_scripting.loader_linker.ScriptLinker;
+import me.utk.util.data.ClassWrapper;
+import me.utk.util.data.Pair;
+import me.utk.util.data.Triplet;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -15,63 +15,25 @@ public abstract class CommandUtil {
     private CommandUtil() {
     }
 
-    private static final String SUB_COMMAND_HANDLER_CLASS_PATH = FileUtil.PROJECT_CLASS_PATH + "command.SubCommandHandler";
-
-    public static void addSubCommandExecutor(String subCommandID, String executorMethodCode) throws Exception {
-        ClassPool defaultPool = ClassPool.getDefault();
-        CtClass subCommandHandlerClass = defaultPool.get(SUB_COMMAND_HANDLER_CLASS_PATH);
-
-        CtMethod initializeMethod = subCommandHandlerClass.getDeclaredMethod("initialize", new CtClass[0]);
-        initializeMethod.insertAfter("{\n" +
-                "            EXECUTOR_FAILURE_COUNTS.add(new me.utk.util.data.ClassWrapper(new Integer(0)));\n" +
-                "            ALL_SUB_COMMAND_IDS.add(\"" + subCommandID + "\");\n" +
-                "        }");
-
-        CtMethod executeMethod = subCommandHandlerClass.getDeclaredMethod("executionImplementation");
-        String code = "{\n" +
-                "          me.utk.util.data.ClassWrapper numFailures = (me.utk.util.data.ClassWrapper) $4.next();\n" +
-                "          int failures = ((Integer) numFailures.value).intValue();\n" +
-                "          if (failures < 10 && $2.equals(\"" + subCommandID + "\"))\n" +
-                "              try {\n" +
-                "                  " + executorMethodCode + "($1, $3);\n" +
-                "              } catch (Exception e) {\n" +
-                "                  numFailures.value = new Integer(failures + 1);\n" +
-                "              }\n" +
-                "      }";
-        executeMethod.insertAfter(code);
+    public static void addSubCommandExecutor(String subCommandID, CtClass clazz, String methodID) {
+        subCommandHelper(subCommandID, clazz, methodID, true);
     }
-    public static void addSubCommandTabCompleter(String subCommandID, String completerMethodCode) throws Exception {
-        ClassPool defaultPool = ClassPool.getDefault();
-        CtClass subCommandHandlerClass = defaultPool.get(SUB_COMMAND_HANDLER_CLASS_PATH);
-
-        CtMethod initializeMethod = subCommandHandlerClass.getDeclaredMethod("initialize", new CtClass[0]);
-        initializeMethod.insertAfter("TAB_COMPLETER_FAILURE_COUNTS.add(new me.utk.util.data.ClassWrapper(new Integer(0)));");
-
-        CtMethod executeMethod = subCommandHandlerClass.getDeclaredMethod("tabCompletionImplementation");
-        String code = "{\n" +
-                "          me.utk.util.data.ClassWrapper numFailures = (me.utk.util.data.ClassWrapper) $5.next();\n" +
-                "          int failures = ((Integer) numFailures.value).intValue();\n" +
-                "          if (failures < 10 && $2.equals(\"" + subCommandID + "\"))\n" +
-                "              try {\n" +
-                "                  $4.addAll(" + completerMethodCode + "($1, $3));\n" +
-                "              } catch (Exception e) {\n" +
-                "                  numFailures.value = new Integer(failures + 1);\n" +
-                "              }\n" +
-                "      }";
-        executeMethod.insertAfter(code);
+    public static void addSubCommandTabCompleter(String subCommandID, CtClass clazz, String methodID) {
+        subCommandHelper(subCommandID, clazz, methodID, false);
+    }
+    private static void subCommandHelper(String subCommandID, CtClass clazz, String methodID, boolean isExec) {
+        SubCommandHandler.INITIALIZERS.add(() -> {
+            Class<?> finalClass = ScriptLinker.CLASS_CLASS_MAP.get(clazz);
+            Method method = finalClass.getMethod(methodID, CommandSender.class, String[].class);
+            return new Triplet<>(subCommandID, method, isExec);
+        });
     }
 
-    public static void loadAndInitializeSubCommandHandler() {
-        ClassPool defaultPool = ClassPool.getDefault();
-        try {
-            CtClass subCommandHandlerClass = defaultPool.get(SUB_COMMAND_HANDLER_CLASS_PATH);
-            Class<?> eventClass = subCommandHandlerClass.toClass();
-
-            Method initMethod = eventClass.getMethod("initialize");
-            initMethod.invoke(null);
-        } catch (Exception e) {
-            ErrorLogger.logError(() -> "Unable to initialize SubCommandHandler class", e);
-        }
+    public static void initializeSubCommandHandler() {
+        SubCommandHandler.initialize();
+    }
+    public static void terminateSubCommandHandler() {
+        SubCommandHandler.terminate();
     }
 
     public static void sendMessage(CommandSender sender, String message) {

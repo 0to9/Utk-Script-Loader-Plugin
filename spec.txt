@@ -95,7 +95,7 @@ import java.util; // import all classes from the 'java.util' package
  * be found the "spec/events.txt" file.
  *
  * Syntax: @eventID : {
- *             // 1 argument: (? wrapper)
+ *             // 1 argument: (EventWrapper wrapper)
  *
  *             // valid Java code to execute
  *             // See the method definition documentation for more details

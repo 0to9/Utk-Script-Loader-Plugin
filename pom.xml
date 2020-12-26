@@ -80,6 +80,13 @@
             <version>3.27.0-GA</version>
         </dependency>
 
+        <!-- Apache Commons Library -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
+
         <!-- Spigot API -->
         <dependency>
             <groupId>org.spigotmc</groupId>

@@ -1,28 +1,33 @@
 package me.utk.spigot_scripting.event;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import me.utk.spigot_scripting.util.reflection.ReflectiveInitializer;
 
-@SuppressWarnings("rawtypes")
-public class ScriptTerminationWrapper {
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private static final List FAILURE_COUNTS = new LinkedList();
-    private static boolean isInitialized = false;
+import java.lang.reflect.Method;
 
-    public static void handleEvent() {
-        @SuppressWarnings("InstantiationOfUtilityClass")
-        ScriptTerminationWrapper wrapper = new ScriptTerminationWrapper();
-        if (isInitialized)
-            notifyHandlers(wrapper, FAILURE_COUNTS.iterator());
+public class ScriptTerminationWrapper extends EventWrapper<EventWrapper.NoEvent> {
+    private static final ScriptTerminationWrapper INSTANCE = new ScriptTerminationWrapper(null);
+
+    private ScriptTerminationWrapper(NoEvent event) {
+        super(event);
     }
 
-    private static void notifyHandlers(ScriptTerminationWrapper wrapper, Iterator it) {
+    @Override
+    protected EventWrapper<NoEvent> getInstance(NoEvent event) {
+        return new ScriptTerminationWrapper(event);
+    }
+
+    public static void handleEvent() {
+        INSTANCE.handleEvent0(NoEvent.EVENT_INSTANCE);
+    }
+
+    public static void addHandler(ReflectiveInitializer<Method> handlerInit) {
+        INSTANCE.INITIALIZERS.add(handlerInit);
     }
 
     public static void initialize() {
-        if (isInitialized)
-            return;
-        isInitialized = true;
+        INSTANCE.initialize0();
+    }
+    public static void terminate() {
+        INSTANCE.terminate0();
     }
 }
