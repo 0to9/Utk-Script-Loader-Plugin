@@ -22,6 +22,8 @@ public class Script extends DataHolder {
     public final List<Command> COMMAND_HANDLERS = new LinkedList<>();
     public final Map<String, Struct> DEFINED_STRUCTURES = new HashMap<>();
 
+    public final Map<String, String> CLASS_REFERENCES = new HashMap<>();
+
     @Override
     public String toString() {
         return "(script) " + FILE_PATH;

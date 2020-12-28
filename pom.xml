@@ -70,7 +70,7 @@
         <dependency>
             <groupId>me.utk</groupId>
             <artifactId>utilities-library</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
         </dependency>
 
         <!-- Java Runtime Class Modifier Library -->

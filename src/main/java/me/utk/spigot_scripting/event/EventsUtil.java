@@ -29,6 +29,8 @@ public abstract class EventsUtil {
 
         // Spigot events
         addClassToMap("PlayerInteract", "spigot.player", "PlayerInteractWrapper");
+        addClassToMap("PlayerMove", "spigot.player", "PlayerMoveWrapper");
+        addClassToMap("PlayerJoin", "spigot.player", "PlayerJoinWrapper");
 
         /*
          * Load event packages to packages set

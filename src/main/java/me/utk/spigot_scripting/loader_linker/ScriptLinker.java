@@ -2,6 +2,7 @@ package me.utk.spigot_scripting.loader_linker;
 
 import javassist.*;
 import me.utk.spigot_scripting.command.CommandUtil;
+import me.utk.spigot_scripting.plugin.PluginMain;
 import me.utk.spigot_scripting.script.ScriptParser;
 import me.utk.spigot_scripting.script.elements.*;
 import me.utk.spigot_scripting.util.ErrorLogger;
@@ -11,10 +12,7 @@ import me.utk.spigot_scripting.util.exception.CompilingException;
 import me.utk.spigot_scripting.util.exception.LinkingException;
 import me.utk.util.data.Pair;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ScriptLinker {
     public static final String GENERATED_CLASSES_PACKAGE = FileUtil.PROJECT_CLASS_PATH + "loaded";
@@ -35,6 +33,13 @@ public class ScriptLinker {
                 classPool.importPackage(pack);
             classPool.importPackage(ScriptLinker.GENERATED_CLASSES_PACKAGE);
 
+            Set<CtClass> lambdaClassSet = new HashSet<>(30);
+            lambdaClassSet.add(classPool.get("java.lang.Runnable"));
+            for (int i = 0; i < 10; i++) {
+                lambdaClassSet.add(classPool.get("me.utk.util.function.void_lambda.VoidLambda" + i));
+                lambdaClassSet.add(classPool.get("me.utk.util.function.lambda.Lambda" + i));
+            }
+
             for (Script script : scriptsParsed) {
                 // Define script
                 String classPath = GENERATED_CLASSES_PACKAGE + "." + script.UNIQUE_SCRIPT_ID;
@@ -42,18 +47,24 @@ public class ScriptLinker {
 
                 // Define nested structs
                 for (Map.Entry<String, Struct> e : script.DEFINED_STRUCTURES.entrySet()) {
-                    String p1 = classPath + "$" + e.getKey(), p2 = script.UNIQUE_SCRIPT_ID + "$" + e.getKey();
-                    classMap.put(e.getValue(), new Pair<>(p2, classPool.makeClass(p1)));
+                    String structID = e.getKey();
+                    Struct struct = e.getValue();
+                    String p1 = classPath + "$" + structID, p2 = script.UNIQUE_SCRIPT_ID + "$" + structID;
+                    CtClass clazz = classPool.makeClass(p1);
+                    if (struct.RUNNABLE)
+                        for (CtClass lambdaClass : lambdaClassSet)
+                            clazz.addInterface(lambdaClass);
+                    classMap.put(struct, new Pair<>(p2, clazz));
                 }
             }
             for (Script script : scriptsParsed) {
                 // Declare script (static) methods
-                for (Map.Entry<String, Function> e : script.DEFINED_FUNCTIONS.entrySet())
+                for (Map.Entry<String, Function> e : script.DEFINED_FUNCTIONS.entries())
                     memberMap.put(e.getValue(), getMethod(e.getValue(), e.getKey(), script, script, classMap));
 
                 // Declare nested struct (instance) methods
                 for (Struct struct : script.DEFINED_STRUCTURES.values())
-                    for (Map.Entry<String, Function> e : struct.DEFINED_FUNCTIONS.entrySet())
+                    for (Map.Entry<String, Function> e : struct.DEFINED_FUNCTIONS.entries())
                         memberMap.put(e.getValue(), getMethod(e.getValue(), e.getKey(), script, struct, classMap));
 
                 // Declare script (static) hooks
@@ -66,23 +77,23 @@ public class ScriptLinker {
             }
             for (Script script : scriptsParsed) {
                 // Declare and define script (static) methods
-                for (Map.Entry<String, Variable> e : script.DEFINED_VARIABLES.entrySet())
+                for (Map.Entry<String, Variable> e : script.DEFINED_VARIABLES.entries())
                     memberMap.put(e.getValue(), getField(e.getValue(), e.getKey(), script, script, classMap));
 
                 // Declare and define nested struct (instance) variables
                 for (Struct struct : script.DEFINED_STRUCTURES.values())
-                    for (Map.Entry<String, Variable> e : struct.DEFINED_VARIABLES.entrySet())
+                    for (Map.Entry<String, Variable> e : struct.DEFINED_VARIABLES.entries())
                         memberMap.put(e.getValue(), getField(e.getValue(), e.getKey(), script, struct, classMap));
             }
             for (Script script : scriptsParsed) {
                 // Define script (static) methods
-                for (Map.Entry<String, Function> e : script.DEFINED_FUNCTIONS.entrySet())
-                    defineMethod(e.getValue(), (CtBehavior) memberMap.get(e.getValue()), script, classMap);
+                for (Function func : script.DEFINED_FUNCTIONS.values())
+                    defineMethod(func, (CtBehavior) memberMap.get(func), script, classMap);
 
                 // Define nested struct (instance) methods
                 for (Struct struct : script.DEFINED_STRUCTURES.values())
-                    for (Map.Entry<String, Function> e : struct.DEFINED_FUNCTIONS.entrySet())
-                        defineMethod(e.getValue(), (CtBehavior) memberMap.get(e.getValue()), script, classMap);
+                    for (Function func : struct.DEFINED_FUNCTIONS.values())
+                        defineMethod(func, (CtBehavior) memberMap.get(func), script, classMap);
 
                 // Define script (static) hooks
                 for (Hook hook : script.LINKED_CALLBACKS)
@@ -269,18 +280,27 @@ public class ScriptLinker {
             String token = st.nextToken();
             switch (token) {
                 case "$":
-                    String tok;
-                    switch (tok = st.nextToken()) {
+                    String tok = st.nextToken();
+                    String classPathMacro = script.CLASS_REFERENCES.get(tok);
+                    if (classPathMacro != null) {
+                        builder.append(classPathMacro);
+                        break;
+                    }
+                    switch (tok) {
                         case "PATH":
                             builder.append("\"").append(script.FILE_PATH).append("\"");
                             break;
 
-                        case "getRelative":
-                            builder.append(FileUtil.PATH + ".cleanFilePath");
+                        case "FILE":
+                            builder.append("\"").append(FileUtil.getFileName(script.FILE_PATH)).append("\"");
+                            break;
 
-                            check(st, " ", script, "getRelative");
-                            check(st, "(", script, "getRelative");
-                            check(st, " ", script, "getRelative");
+                        case "getRelative":
+                            builder.append(FileUtil.PATH).append(".cleanFilePath");
+
+                            throwCompilationExceptionIfNoMatch(st, " ", script, "getRelative");
+                            throwCompilationExceptionIfNoMatch(st, "(", script, "getRelative");
+                            throwCompilationExceptionIfNoMatch(st, " ", script, "getRelative");
 
                             builder.append("(\"");
                             builder.append(FileUtil.getParentDirectory(script.FILE_PATH));
@@ -288,62 +308,37 @@ public class ScriptLinker {
                             // rest of switch case can handle strings
                             break;
 
+                        case "PLUGIN":
+                        case "JAVA_PLUGIN":
+                            builder.append(PluginMain.PATH).append(".INSTANCE");
+                            break;
+
+                        case "ALL_PLAYERS":
+                            builder.append(PluginMain.PATH).append(".ALL_PLAYERS");
+                            break;
+
                         case "ifIncluded":
                         case "ifNotIncluded":
-                            check(st, " ", script, tok);
-                            check(st, "(", script, tok);
-                            check(st, " ", script, tok);
+                            throwCompilationExceptionIfNoMatch(st, " ", script, tok);
+                            throwCompilationExceptionIfNoMatch(st, "(", script, tok);
+                            throwCompilationExceptionIfNoMatch(st, " ", script, tok);
                             boolean scriptIsIncluded = script.INCLUDED_SCRIPTS.containsKey(st.nextToken());
-                            check(st, " ", script, tok);
-                            check(st, ")", script, tok);
+                            throwCompilationExceptionIfNoMatch(st, " ", script, tok);
+                            throwCompilationExceptionIfNoMatch(st, ")", script, tok);
 
                             // hack to reuse code inclusion code from $else
                             currParsedInclusionState = scriptIsIncluded == tok.equals("ifIncluded");
                             prevParsedInclusionState = currParsedInclusionState;
 
                         case "else":
-                            check(st, " ", script, tok);
-                            check(st, "{", script, tok);
+                            throwCompilationExceptionIfNoMatch(st, " ", script, tok);
+                            throwCompilationExceptionIfNoMatch(st, "{", script, tok);
 
                             if (prevParsedInclusionState == null)
                                 throw new CompilingException("Script in \"" + script.FILE_PATH + "\" has a " +
                                         "dangling $else directive");
-                            if (prevParsedInclusionState) {
-                                StringBuilder helper = new StringBuilder();
-                                int braceCount = 1;
-                                while (braceCount > 0) {
-                                    switch (tok = st.nextToken()) {
-                                        case "{":
-                                            braceCount++;
-                                            break;
-
-                                        case "}":
-                                            braceCount--;
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                                    helper.append(tok);
-                                }
-                                builder.append(resolveCode(helper.substring(0, helper.length() - 1), script, classMap, paramMap));
-                            } else {
-                                int braceCount = 1;
-                                while (braceCount > 0)
-                                    switch (st.nextToken()) {
-                                        case "{":
-                                            braceCount++;
-                                            break;
-
-                                        case "}":
-                                            braceCount--;
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                            }
-                            check(st, " ", script, tok);
+                            builder.append(parseAndResolveCodeBlock(st, prevParsedInclusionState, script, classMap, paramMap));
+                            throwCompilationExceptionIfNoMatch(st, " ", script, tok);
                             break;
 
                         default:
@@ -364,6 +359,30 @@ public class ScriptLinker {
                     }
                     builder.append(nextToken);
                     break;
+                    
+                case "for":
+                    builder.append(token);
+                    builder.append(maybeParseSpace(builder, st)); // (
+                    String forBody = parseAndResolveCodeBlock(st, true, script, classMap, paramMap);
+                    if (forBody.contains(";")) {
+                        builder.append(forBody);
+                        builder.append(")");
+                    } else {
+                        int colonInd = forBody.indexOf(":");
+                        String[] obj = forBody.substring(0, colonInd).trim().split(" "); // [type, id, ...]
+                        forBody = forBody.substring(colonInd + 1);
+                        builder.append("java.util.Iterator it = (").append(forBody).append(").iterator();it.hasNext();)");
+                        String statement = resolveCode(parseStatement(st), script, classMap, paramMap);
+                        builder.append("{").append(obj[0]).append(" ").append(obj[1])
+                                .append(" = (").append(obj[0]).append(") it.next(); ");
+                        builder.append(statement).append("}");
+                    }
+                    break;
+
+                case ".":
+                    builder.append(token);
+                    builder.append(maybeParseSpace(builder, st));
+                    break;
 
                 default:
                     String t2 = resolveReference(token, script, classMap);
@@ -377,10 +396,77 @@ public class ScriptLinker {
         return builder.toString();
     }
 
-    private static void check(Tokenizer tok, String target, Script script, String directiveID) {
+    private static void throwCompilationExceptionIfNoMatch(Tokenizer tok, String target, Script script, String directiveID) {
         if (!target.equals(tok.nextToken()))
             throw new CompilingException("Script in \"" + script.FILE_PATH + "\" has a " +
                     "incorrectly formatted '$" + directiveID + "' directive");
+    }
+
+    private static String maybeParseSpace(StringBuilder builder, Tokenizer st) {
+        String tok = st.nextToken();
+        if (tok.equals(" ")) {
+            builder.append(tok);
+            tok = st.nextToken();
+        }
+        return tok;
+    }
+
+    private static String parseStatement(Tokenizer st) {
+        StringBuilder builder = new StringBuilder();
+        int braceCount = 0;
+        boolean hasSeenFreeBrace = false;
+        String token = "";
+        while (!(!hasSeenFreeBrace && token.equals(";") || hasSeenFreeBrace && braceCount == 0)) {
+            token = st.nextToken();
+            switch (token) {
+                case "{":
+                    hasSeenFreeBrace = hasSeenFreeBrace || braceCount == 0;
+                case "[":
+                case "(":
+                    braceCount++;
+                    break;
+
+                case "}":
+                case "]":
+                case ")":
+                    braceCount--;
+                    break;
+
+                default:
+                    break;
+            }
+            builder.append(token);
+        }
+        return builder.toString();
+    }
+
+    private static String parseAndResolveCodeBlock(Tokenizer st, boolean resolve, Script script,
+                                                   Map<DataHolder, Pair<String, CtClass>> classMap,
+                                                   Map<String, Integer> paramMap) {
+        StringBuilder builder = new StringBuilder();
+        int braceCount = 1;
+        String tok;
+        while (braceCount > 0) {
+            switch (tok = st.nextToken()) {
+                case "(":
+                case "[":
+                case "{":
+                    braceCount++;
+                    break;
+
+                case ")":
+                case "]":
+                case "}":
+                    braceCount--;
+                    break;
+
+                default:
+                    break;
+            }
+            if (resolve)
+                builder.append(tok);
+        }
+        return resolve ? resolveCode(builder.substring(0, builder.length() - 1), script, classMap, paramMap) : "";
     }
 
     private static String resolveReference(String ref, Script script, Map<DataHolder, Pair<String, CtClass>> classMap) {

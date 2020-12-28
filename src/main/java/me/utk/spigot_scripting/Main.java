@@ -5,6 +5,7 @@ import javassist.CtClass;
 import me.utk.spigot_scripting.command.CommandUtil;
 import me.utk.spigot_scripting.event.EventsUtil;
 import me.utk.spigot_scripting.event.ScriptInitializationWrapper;
+import me.utk.spigot_scripting.event.ScriptTerminationWrapper;
 import me.utk.spigot_scripting.loader_linker.CustomClassPool;
 import me.utk.spigot_scripting.loader_linker.ScriptLinker;
 import me.utk.spigot_scripting.loader_linker.ScriptLoader;
@@ -17,22 +18,27 @@ public class Main {
 
         String testPath = "test.txt";
         String scriptPath = "src/main/resources/scripts/main.txt"; // temporary file path
+        String temp = "src/main/resources/scripts/scoreboard/distance.txt";
 
-        processScripts(testPath, ScriptInitializationWrapper::handleEvent);
+        testScript(scriptPath, () -> {
+            ScriptInitializationWrapper.handleEvent();
+            ScriptTerminationWrapper.handleEvent();
+        });
     }
 
-    private static void processScripts(String filepath, VoidLambda0 todo) {
+    private static void testScript(String filepath, VoidLambda0 todo) {
         createScripts(filepath);
         todo.run();
         destroyScripts();
     }
 
-    public static void createScripts(String filePath) {
+    public static void createScripts(String... filePaths) {
         // Reload class pool to allow reloading classes
         CustomClassPool.reloadDefault();
 
         // Load and link scripts
-        ScriptLoader.loadScript(filePath);
+        for (String filePath : filePaths)
+            ScriptLoader.loadScript(filePath);
         ScriptLinker.linkScripts();
 
         // Initialize classes

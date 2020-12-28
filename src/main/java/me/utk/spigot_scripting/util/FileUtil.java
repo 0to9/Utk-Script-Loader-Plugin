@@ -29,4 +29,7 @@ public class FileUtil {
     public static String getParentDirectory(String path) {
         return path.substring(0, path.lastIndexOf(File.separatorChar) + 1);
     }
+    public static String getFileName(String path) {
+        return path.substring(path.lastIndexOf(File.separatorChar) + 1).replaceAll("\\.txt", "");
+    }
 }

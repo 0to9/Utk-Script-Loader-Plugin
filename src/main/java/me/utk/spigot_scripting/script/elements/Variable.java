@@ -4,7 +4,13 @@ import java.io.PrintStream;
 
 public class Variable extends CodeHolder {
     public Variable(String type, String code) {
-        super(type, code);
+        super(type, processArrayInit(type, code));
+    }
+
+    private static String processArrayInit(String type, String code) {
+        if (code != null && code.startsWith(" {"))
+            code = "new " + type + code;
+        return code;
     }
 
     public void print(PrintStream out, String id) {

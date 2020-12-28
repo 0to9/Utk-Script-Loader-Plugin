@@ -1,0 +1,61 @@
+/*
+ *
+ */
+
+double SCOREBOARD_UPDATE_IN_SECONDS = 0.5;
+
+#include util "(command)scoreboard/util.txt"
+
+#ref MapEntry java.util.Map.Entry
+
+import org.bukkit;
+import org.bukkit.entity;
+import org.bukkit.event.player;
+
+import java.util;
+import java.io;
+
+@Init : {
+    try {
+        BufferedReader br = new BufferedReader(new FileReader($getRelative($FILE + "/config.txt")));
+        String line;
+        while ((line = br.readLine()) != null)
+            try {
+                StringTokenizer st = new StringTokenizer(line);
+                util::settings.put(st.nextToken(), new String[]{st.nextToken(), st.nextToken(), st.nextToken()});
+            } catch (Exception ignored) {
+            }
+    } catch (FileNotFoundException ignored) {
+    }
+
+    long ticksBetweenUpdates = Math.max(1L, (long) (SCOREBOARD_UPDATE_IN_SECONDS * 20L + 0.5));
+    Bukkit.getScheduler().runTaskTimer($PLUGIN, new util::ObjectiveUpdater(), 1L, ticksBetweenUpdates);
+}
+
+@Exit : {
+    try {
+        PrintWriter pw = new PrintWriter(new FileWriter($getRelative($FILE + "/config.txt")));
+        for ($MapEntry e : util::settings.entrySet()) {
+            pw.print(e.getKey());
+            String[] config = (String[]) e.getValue();
+            for (int i = 0; i < config.length; i++) {
+                pw.print(" ");
+                if (config[i] != null)
+                    pw.print(config[i]);
+            }
+            pw.println();
+        }
+        pw.close();
+    } catch (FileNotFoundException ignored) {
+    }
+}
+
+@PlayerJoin : {
+    Player player = ((PlayerJoinEvent) wrapper.getEvent()).getPlayer();
+    if (!util::settings.containsKey(player.getName())) {
+        util::settings.put(player.getName(), new String[3]);
+        player.sendMessage(util::WARNING_TEXT_COLOR + "Your previous scoreboard configurations were not saved");
+        player.sendMessage(util::WARNING_TEXT_COLOR + "Loading server-default scoreboards...");
+    }
+    util::updatePlayerScoreboard(player);
+}

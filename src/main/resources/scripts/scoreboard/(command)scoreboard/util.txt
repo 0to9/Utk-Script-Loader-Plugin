@@ -1,0 +1,91 @@
+/*
+ *
+ */
+
+ChatColor WARNING_TEXT_COLOR = ChatColor.GOLD;
+
+#ref MapEntry java.util.Map.Entry
+
+import org.apache.commons.collections4;
+import org.apache.commons.collections4.multimap;
+
+import org.bukkit;
+import org.bukkit.entity;
+import org.bukkit.scoreboard;
+
+import java.util;
+
+void updatePlayerScoreboard(Player player) {
+    ScoreboardManager manager = Objects.requireNonNull(Bukkit.getScoreboardManager());
+    Scoreboard currentBoard = player.getScoreboard();
+    Scoreboard mainBoard = manager.getMainScoreboard();
+    if (currentBoard == mainBoard) {
+        currentBoard = manager.getNewScoreboard();
+        player.setScoreboard(currentBoard);
+    }
+
+    String[] config = (String[]) settings.get(player.getName());
+    for (int i = 0; i < 3; i++) {
+        Objective mainObjective = null;
+
+        String conf = config[i];
+        if ("".equals(conf))
+            config[i] = null;
+        else if (conf != null) {
+            Objective oldObj = currentBoard.getObjective(displaySlots[i]);
+            if (oldObj != null) {
+                if (conf.equals(oldObj.getName()))
+                    continue; // skip slot if already set correctly
+
+                Objective mainObj = mainBoard.getObjective(oldObj.getName());
+                objectiveMap.removeMapping(mainObj, oldObj);
+                currentBoard.clearSlot(displaySlots[i]);
+            }
+            if (conf.equals("disable_slot"))
+                continue; // disable this scoreboard display slot
+
+            mainObjective = mainBoard.getObjective(conf);
+            if (mainObjective == null) {
+                player.sendMessage(WARNING_TEXT_COLOR + "Unable to find objective: " + conf);
+                player.sendMessage(WARNING_TEXT_COLOR + "Loading in default server scoreboard");
+                config[i] = null;
+            }
+        }
+
+        if (mainObjective == null)
+            mainObjective = mainBoard.getObjective(displaySlots[i]);
+
+        if (mainObjective != null) {
+            String objectiveName = mainObjective.getName();
+
+            Objective newObjective = currentBoard.getObjective(objectiveName);
+            if (newObjective == null) {
+                String criteria = mainObjective.getCriteria(), displayName = mainObjective.getDisplayName();
+                newObjective = currentBoard.registerNewObjective(objectiveName, criteria, displayName);
+            }
+
+            restockScores(mainObjective, newObjective);
+            objectiveMap.put(mainObjective, newObjective);
+            newObjective.setDisplaySlot(displaySlots[i]);
+        }
+    }
+}
+
+void restockScores(Objective oldObjective, Objective newObjective) {
+    for (OfflinePlayer player : $ALL_PLAYERS) {
+        String name = player.getName();
+        if (name != null)
+            newObjective.getScore(name).setScore(oldObjective.getScore(name).getScore());
+    }
+}
+
+MultiValuedMap objectiveMap = new HashSetValuedHashMap();
+Map settings = new HashMap();
+DisplaySlot[] displaySlots = {DisplaySlot.BELOW_NAME, DisplaySlot.PLAYER_LIST, DisplaySlot.SIDEBAR};
+
+callback ObjectiveUpdater {
+    void run() {
+        for ($MapEntry e : objectiveMap.entries())
+            restockScores((Objective) e.getKey(), (Objective) e.getValue());
+    }
+}

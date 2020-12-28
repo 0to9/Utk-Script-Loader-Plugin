@@ -5,48 +5,24 @@
 
 #include me "test.txt"
 
+#ref Map_Entry java.util.Map.Entry
+
 import java.util;
 
+Map map = new HashMap();
+
 @Init : {
-    helperMethod();
-}
+    for (int i = 0; i < 10; i++)
+        map.put("" + i, "" + i);
 
-void helperMethod() {
-    $ifIncluded(me) {
-        System.out.println($PATH);
-        System.out.println($getRelative("./random/../file_path/../../to/know-where"));
-    }
-}
-
-$exec command : {
-    // do nothing
-}
-
-$comp command : {
-    // do nothing
-    return null;
+    for ($Map_Entry e : map.entrySet())
+        System.out.println(e.getKey() + "->" + e.getValue());
 }
 
 struct Obj {
-    ArrayList ints = new ArrayList(10);
+    int val;
 
-    init Obj() {
-        for (int i = 0; i < 7; i++)
-            ints.add(new Integer(i));
-    }
-
-    int twist() {
-        ArrayList next = new ArrayList(10);
-        int sum = 0;
-        int prev = 0;
-        int curr;
-        for (int i = 0; i < ints.size(); i++) {
-            curr = ((Integer) ints.get(i)).intValue();
-            next.add(new Integer(prev + curr));
-            sum += prev + curr;
-            prev = curr;
-        }
-        ints = next;
-        return sum;
+    init Obj(int val) {
+        this.val = val;
     }
 }

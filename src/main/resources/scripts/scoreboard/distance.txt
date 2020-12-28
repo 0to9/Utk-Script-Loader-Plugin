@@ -1,0 +1,84 @@
+/*
+ *
+ */
+
+double DISTANCE_SCALE = 1.0; // in meters -> 1 scoreboard point = 'DISTANCE_SCALE' meters
+
+String OBJECTIVE_ID = "distance";
+String OBJECTIVE_DISPLAY_NAME = "Distance Traveled";
+
+void storeCountedStatistics() {
+    // Flight Distance (jumps & elytra)
+    stats.add(Statistic.AVIATE_ONE_CM);
+    stats.add(Statistic.FLY_ONE_CM);
+
+    // Vertical Distance
+    stats.add(Statistic.FALL_ONE_CM);
+    stats.add(Statistic.CLIMB_ONE_CM);
+
+    // Vehicle Distance
+    stats.add(Statistic.BOAT_ONE_CM);
+    stats.add(Statistic.MINECART_ONE_CM);
+
+    // Animal Distance
+    stats.add(Statistic.HORSE_ONE_CM);
+    stats.add(Statistic.PIG_ONE_CM);
+
+    // Land Distance
+    stats.add(Statistic.CROUCH_ONE_CM);
+    stats.add(Statistic.SPRINT_ONE_CM);
+    stats.add(Statistic.WALK_ONE_CM);
+
+    // Water Distance
+    stats.add(Statistic.SWIM_ONE_CM);
+    stats.add(Statistic.WALK_ON_WATER_ONE_CM);
+    stats.add(Statistic.WALK_UNDER_WATER_ONE_CM);
+}
+
+import org.bukkit;
+import org.bukkit.event.player;
+import org.bukkit.scoreboard;
+
+import java.util;
+
+Set stats = new HashSet(20);
+
+void updatePlayerScore(OfflinePlayer player, Objective objective) {
+    String playerName = player.getName();
+    if (playerName == null)
+        return;
+
+    double score = 0.0;
+    for (Statistic stat : stats)
+        score += player.getStatistic(stat);
+    score = score / (100.0 * DISTANCE_SCALE) + 0.5;
+
+    objective.getScore(playerName).setScore((int) score);
+}
+
+Objective getMainBoardObjective() {
+    ScoreboardManager manager = Objects.requireNonNull(Bukkit.getScoreboardManager());
+    Scoreboard mainBoard = manager.getMainScoreboard();
+
+    Objective obj = mainBoard.getObjective(OBJECTIVE_ID);
+    if (obj == null)
+        obj = mainBoard.registerNewObjective(OBJECTIVE_ID, "dummy", OBJECTIVE_DISPLAY_NAME);
+    return obj;
+}
+
+@Init : {
+    storeCountedStatistics();
+    Bukkit.getScheduler().runTaskLater($PLUGIN, new AllPlayerScoreUpdater(), 1L);
+}
+
+@PlayerMove : {
+    updatePlayerScore(((PlayerMoveEvent) wrapper.getEvent()).getPlayer(), getMainBoardObjective());
+}
+
+callback AllPlayerScoreUpdater {
+    void run() {
+        Objective obj = getMainBoardObjective();
+        for (OfflinePlayer player : $ALL_PLAYERS)
+            updatePlayerScore(player, obj);
+    }
+}

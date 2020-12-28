@@ -5,6 +5,7 @@ import me.utk.spigot_scripting.util.FileUtil;
 import me.utk.spigot_scripting.util.exception.LinkingException;
 import me.utk.spigot_scripting.util.exception.ParsingException;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -29,6 +30,7 @@ public class ScriptParser {
                 populateScript(script);
             } catch (ParsingException e) {
                 SCRIPTS_PARSED.remove(filePath);
+                e.printStackTrace();
                 throw new ParsingException(e.getMessage() + " in \"" + filePath + "\"");
             }
         }
@@ -43,6 +45,8 @@ public class ScriptParser {
             currentToken = currentToken(scanner);
             if (currentToken.equals("#include"))
                 includeScript(scanner, script);
+            else if (currentToken.equals("#ref"))
+                defineMacro(scanner, script);
             else if (currentToken.equals("import")) {
                 eat(scanner, "import");
                 String pack = currentToken(scanner);
@@ -61,6 +65,8 @@ public class ScriptParser {
                 eat(scanner, ";");
             } else if (currentToken.equals("struct"))
                 declareStruct(scanner, script);
+            else if (currentToken.equals("callback"))
+                declareCallback(scanner, script);
             else if (currentToken.startsWith("@"))
                 createHook(scanner, script);
             else if (currentToken.startsWith("$"))
@@ -82,18 +88,70 @@ public class ScriptParser {
 
         script.INCLUDED_SCRIPTS.put(uniqueID, parseScript(filePath));
     }
+    private static void defineMacro(Scanner scanner, Script script) {
+        eat(scanner, "#ref");
+        String uniqueID = currentToken(scanner);
+        eat(scanner, uniqueID);
+        String classPath = currentToken(scanner);
+        eat(scanner, classPath);
+
+        script.CLASS_REFERENCES.put(uniqueID, classPath);
+    }
 
     private static void declareStruct(Scanner scanner, Script script) {
         eat(scanner, "struct");
+        parseRestOfStruct(scanner, script, false);
+    }
+    private static void declareCallback(Scanner scanner, Script script) {
+        eat(scanner, "callback");
+        parseRestOfStruct(scanner, script, true);
+    }
+    private static void parseRestOfStruct(Scanner scanner, Script script, boolean isCallback) {
         String uniqueID = currentToken(scanner);
         eat(scanner, uniqueID);
 
-        Struct struct = new Struct();
+        Struct struct = new Struct(isCallback);
         eat(scanner, "{");
         while (!currentToken(scanner).equals("}"))
             addMethodOrVariable(scanner, struct);
         eat(scanner, "}");
+        if (isCallback) {
+            boolean[][] alreadyDefined = new boolean[2][10];
+            String[] methodIDs = {"run", "get"}, retType = {"void", "Object"};
+            for (int i = 0; i < 2; i++)
+                for (Function def : struct.DEFINED_FUNCTIONS.get(methodIDs[i])) {
+                    int count = countArgs(def);
+                    if (count < 10)
+                        alreadyDefined[i][count] = true;
+                }
+
+            String code = " { throw new UnsupportedOperationException(); }";
+            for (int i = 0; i < 2; i++)
+                if (!alreadyDefined[i][0])
+                    struct.DEFINED_FUNCTIONS.put(methodIDs[i], new Function(retType[i], "()", code));
+
+            StringBuilder builder = new StringBuilder("Object o1");
+            for (int j = 1; j < 10; j++) {
+                String args = "( " + builder + " )";
+                for (int i = 0; i < 2; i++)
+                    if (!alreadyDefined[i][j])
+                        struct.DEFINED_FUNCTIONS.put(methodIDs[i], new Function(retType[i], args, code));
+                builder.append(" , Object o").append(j + 1);
+            }
+        }
+        if (!struct.DEFINED_FUNCTIONS.containsKey(uniqueID))
+            struct.DEFINED_FUNCTIONS.put(uniqueID, new Function("init", "()", " { }"));
         script.DEFINED_STRUCTURES.put(uniqueID, struct);
+    }
+
+    private static int countArgs(Function function) {
+        if (function.ARGUMENTS.length() == 2)
+            return 0;
+        int countCommas = 0;
+        for (char c : function.ARGUMENTS.toCharArray())
+            if (c == ',')
+                countCommas++;
+        return countCommas + 1;
     }
 
     private static String parseCodeBlock(Scanner scanner) {
@@ -139,12 +197,10 @@ public class ScriptParser {
         StringBuilder builder = new StringBuilder();
 
         int grouperCount = 0;
-        boolean isExpressionEnd;
+        boolean stayInLoop = true;
         String currentToken;
         do {
             currentToken = currentToken(scanner);
-            isExpressionEnd = false;
-
             switch (currentToken) {
                 case "(":
                 case "[":
@@ -160,24 +216,21 @@ public class ScriptParser {
 
                 case ",":
                 case ";":
-                    isExpressionEnd = true;
+                    stayInLoop = false;
                     break;
 
                 default:
                     break;
             }
 
-            if (!isExpressionEnd) {
+            if (stayInLoop = stayInLoop || grouperCount > 0) {
                 builder.append(" ").append(currentToken);
                 eat(scanner, currentToken);
             }
-        } while (grouperCount > 0 || !isExpressionEnd);
+        } while (stayInLoop);
         return builder.toString();
     }
 
-    private static boolean takesSpace(char c) {
-        return 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || c == '_' || c == ',' || c == ')';
-    }
     private static String parseArguments(Scanner scanner) {
         StringBuilder builder = new StringBuilder(), helper = new StringBuilder();
 
@@ -211,8 +264,15 @@ public class ScriptParser {
     }
 
     private static void addMethodOrVariable(Scanner scanner, DataHolder holder) {
-        String type = currentToken(scanner); // either variable type or method return val
-        eat(scanner, type);
+        StringBuilder typeBuilder = new StringBuilder(currentToken(scanner)); // either variable type or method return val
+        eat(scanner, typeBuilder.toString());
+        while (currentToken(scanner).equals("[")) {
+            eat(scanner, "[");
+            eat(scanner, "]");
+            typeBuilder.append("[]");
+        }
+        String type = typeBuilder.toString();
+
         String uniqueID = currentToken(scanner); // either variable or method id
         eat(scanner, uniqueID);
 
@@ -235,6 +295,8 @@ public class ScriptParser {
                     holder.DEFINED_VARIABLES.put(uniqueID, new Variable(type, code));
                 }
             case ";":
+                if (!holder.DEFINED_VARIABLES.containsKey(uniqueID))
+                    holder.DEFINED_VARIABLES.put(uniqueID, new Variable(type, code));
                 eat(scanner, ";");
                 break;
 

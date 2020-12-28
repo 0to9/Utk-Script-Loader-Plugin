@@ -1,0 +1,55 @@
+/*
+ * // TODO finish events.txt specification
+ * This is the specification document for all event hooks
+ * provided by this scripting language.
+ *
+ * Each event specification will be a single line comment with
+ * the event ID followed by the fully qualified class path for
+ * the wrapped event (returned by 'wrapper.getEvent()').
+ *
+ * @author Utkarsh Priyam
+ * @version December 25, 2020
+ */
+
+// include the event specification script file
+// (the current file) with id 'eventSpec'
+#include eventSpec "spec/events.txt"
+
+/*
+ * Plugin-specific Script Events
+ *
+ * These events are special events, not provided by the Spigot API.
+ * They exist to provide developers with proper options for creating
+ * and destroying objects used by the scripts.
+ *
+ * Init: Used for script initialization
+ * Exit: Used for script termination
+ */
+// Init -> me.utk.spigot_scripting.event.EventWrapper.NullEvent
+// Exit -> me.utk.spigot_scripting.event.EventWrapper.NullEvent
+
+/*
+ * Spigot API Events
+ *
+ * These are all of the events provided directly by the Spigot API.
+ * For the custom events provided by my (utk003's) library, check
+ * out the next section (Custom Events). // TODO my event library
+ *
+ * These events are in no particular order.
+ *
+ * For documentation on these events, check out the Spigot API documentation:
+ * https://hub.spigotmc.org/javadocs/bukkit/index.html
+ */
+// PlayerInteract   ->  org.bukkit.event.player.PlayerInteractEvent
+// PlayerMove       ->  org.bukkit.event.player.PlayerMoveEvent
+// PlayerJoin       ->  org.bukkit.event.player.PlayerJoinEvent
+
+/*
+ * Custom Events
+ *
+ * These are all custom events, for functionality beyond what is provided
+ * by the Spigot API. Note that some of these might not meet the same
+ * contract as regular API events, particularly relating to execution delay.
+ *
+ * // TODO my event library
+ */

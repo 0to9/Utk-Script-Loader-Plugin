@@ -26,8 +26,8 @@
  *
  * Note that, like most other programming languages,
  * multiline comments do NOT nest. In other words,
- * removing the spaces from the example above
- * would prevent this file from compiling.
+ * removing the spaces from the example above would
+ * prevent this file from compiling properly.
  */
 
 /*
@@ -58,7 +58,28 @@
  * 3) A single script can be bound to more than one unique IDs
  *   - This is considered a bad practice, but it can be done
  */
-#include specFile "spec.txt" // include the current script file with id 'specFile'
+#include    mainSpec    "spec.txt"          // include the current script file with id 'mainSpec'
+#include    codeSpec    "spec/code.txt"     // include the code specification script file with id 'codeSpec'
+#include    eventSpec   "spec/events.txt"   // include the event specification script file with id 'eventSpec'
+
+/*
+ * The Java compiler in use doesn't support nested Java classes.
+ * As a result, to access internal classes, fully qualified class
+ * paths must be used. To make development less tedious, the '#ref'
+ * directive lets developers create custom shortcut references to
+ * commonly used nested classes (such as 'java.util.Map.Entry').
+ *
+ * To create a class path reference, simply pick a unique id 'uid'
+ * and write '#ref uid fully.qualified.Class.Path'. Note that the
+ * unique id must be composed solely of letters, numbers, and the
+ * underscore character. Using any other characters may or may not
+ * work as intended.
+ *
+ * Also, note that these class path references share their IDs with
+ * the custom code macros. Be careful not to override any of those,
+ * or you will lose that functionality altogether.
+ */
+#ref MapEntry java.util.Map.Entry
 
 /*
  * In order to facilitate a reasonable script coding experience,
@@ -256,6 +277,35 @@ struct Empty {
     init Empty() {
         // Do nothing in this constructor
     }
+}
+
+/*
+ * And last but certainly not least, this scripting language
+ * provides a special syntax for lambda expressions, as they
+ * are otherwise not supported (see "spec/code.txt").
+ *
+ * Lambda expressions can be created with the same syntax as
+ * structs, but with the 'struct' keyword replaced by 'callback'
+ * to indicate that the script linker should have the struct
+ * implement the 'java.lang.Runnable' class. Additionally, the linker
+ * implements all of the Lambda classes provided by my utilities
+ * library (https://github.com/utk003/Utilities).
+ *
+ * However, note that the varargs Lambdas are not implemented,
+ * because varargs are not supported and method resolution would
+ * be an absolute pain with the overlapping lambda methods.
+ *
+ * When defining a callback, these interfaces will all provide
+ * different functional methods which can be overridden to provide
+ * lambda expression functionality. Any not overridden methods
+ * will automatically be defined to throw exceptions if called.
+ * Specifically, they will throw 'UnsupportedOperationException's.
+ */
+callback Lambda {
+    // No need to define any methods because
+    // they all have default definitions
+
+    // But note that the defaults throw exceptions
 }
 
 /*

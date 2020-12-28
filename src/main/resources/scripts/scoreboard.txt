@@ -1,0 +1,6 @@
+/*
+ *
+ */
+
+#include distance           "scoreboard/distance.txt"
+#include command_scoreboard "scoreboard/(command)scoreboard.txt"

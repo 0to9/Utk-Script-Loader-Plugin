@@ -1,21 +1,23 @@
 package me.utk.spigot_scripting.script.elements;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
+
 import java.io.PrintStream;
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class DataHolder {
-    public final Map<String, Function> DEFINED_FUNCTIONS = new HashMap<>();
-    public final Map<String, Variable> DEFINED_VARIABLES = new HashMap<>();
+    public final MultiValuedMap<String, Function> DEFINED_FUNCTIONS = new HashSetValuedHashMap<>();
+    public final MultiValuedMap<String, Variable> DEFINED_VARIABLES = new HashSetValuedHashMap<>();
 
     public void print(PrintStream out) {
-        for (Map.Entry<String, Variable> e : DEFINED_VARIABLES.entrySet()) {
+        for (Map.Entry<String, Variable> e : DEFINED_VARIABLES.entries()) {
             out.println();
             e.getValue().print(out, e.getKey());
         }
         out.println();
 
-        for (Map.Entry<String, Function> e : DEFINED_FUNCTIONS.entrySet()) {
+        for (Map.Entry<String, Function> e : DEFINED_FUNCTIONS.entries()) {
             out.println();
             e.getValue().print(out, e.getKey());
         }

@@ -48,7 +48,8 @@ public abstract class CommandUtil {
 
     public static List<String> purgeCompletions(String currentInput, List<String> completions) {
         if (completions != null) {
-            completions.removeIf(s -> !s.contains(currentInput));
+            String currentInputLowerCase = currentInput.toLowerCase();
+            completions.removeIf(s -> !s.toLowerCase().contains(currentInputLowerCase));
             if (completions.isEmpty())
                 completions = null;
         }

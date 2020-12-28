@@ -7,9 +7,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public abstract class EventWrapper<E> {
-    public static final class NoEvent {
+    public static final class NullEvent {
         @SuppressWarnings("InstantiationOfUtilityClass")
-        public static final NoEvent EVENT_INSTANCE = new NoEvent();
+        public static final NullEvent EVENT_INSTANCE = new NullEvent();
     }
 
     private final E EVENT;

@@ -17,7 +17,7 @@
  */
 
 // Comment any modules you don't want activated
-#include craft_command "easy_crafting/(command)craft.txt"
+#include command_craft "easy_crafting/(command)craft.txt"
 // TODO create and add autocrafting module
 
 // DO NOT MODIFY ANY CODE BEYOND THIS POINT
