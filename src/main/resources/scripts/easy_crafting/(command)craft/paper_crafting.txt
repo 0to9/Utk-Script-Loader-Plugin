@@ -1,5 +1,5 @@
 /*
- * This is the script file for the paper crafting module of the /craft command.
+ * This is the script file for the paper crafting module of the 'craft' sub-command.
  * This module allows players to craft all sugarcane present in their inventory
  * directly into paper using the 3:3 sugarcane to paper recipe.
  *
@@ -9,13 +9,14 @@
  * thoroughly and are confident in your abilities to successfully modify the script.
  *
  * @author Utkarsh Priyam
- * @version December 22, 2020
+ * @version December 28, 2020
  */
 
-// DO NOT MODIFY ANY CODE BEYOND THIS POINT
-// (see warning in the file header comment)
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
-#include craft_command "../(command)craft.txt"
+#include command "../(command)craft.txt"
 
 import org.bukkit;
 import org.bukkit.inventory;
@@ -31,8 +32,36 @@ void handleCraft(PlayerInventory inventory, World playerWorld, Location playerLo
         }
 
     int paperToMake = sugarcaneCount - sugarcaneCount % 3;
-    craft_command::addToInventory(new ItemStack(Material.PAPER), paperToMake, inventory, playerWorld, playerLocation);
+    command::addToInventory(new ItemStack(Material.PAPER), paperToMake, inventory, playerWorld, playerLocation);
 
     sugarcaneCount %= 3;
-    craft_command::addToInventory(new ItemStack(Material.SUGAR_CANE), sugarcaneCount, inventory, playerWorld, playerLocation);
+    command::addToInventory(new ItemStack(Material.SUGAR_CANE), sugarcaneCount, inventory, playerWorld, playerLocation);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
+
+/*
+MIT License
+
+Copyright (c) 2020 Utkarsh Priyam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/

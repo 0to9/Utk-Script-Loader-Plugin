@@ -1,0 +1,6 @@
+`Automatic Crafting' Module Upgrade
+You can now take comparator output for AutoCrafters
+AutoCrafters now strictly enforce stacks of 1 item
+
+`Scoreboard' Module (Again)
+Live updating has been internally disabled until further notice

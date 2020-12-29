@@ -1,0 +1,7 @@
+Fixed Bugs in /craft and the `Better Mending' Module
+
+Updated the `Movable Tile Entities' Module
+Pistons can now move tile entities when powered directly via redstone, repeaters, comparators, or redstone torches
+Planned additions include support for slime/honey and other redstone components such as observers
+
+Gave Public Access to /version and Created /changelog

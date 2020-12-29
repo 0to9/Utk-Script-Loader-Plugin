@@ -9,7 +9,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class CommandUtil {
     private CommandUtil() {
@@ -49,7 +51,8 @@ public abstract class CommandUtil {
     public static List<String> purgeCompletions(String currentInput, List<String> completions) {
         if (completions != null) {
             String currentInputLowerCase = currentInput.toLowerCase();
-            completions.removeIf(s -> !s.toLowerCase().contains(currentInputLowerCase));
+            Set<String> seen = new HashSet<>(4 * completions.size() / 3);
+            completions.removeIf(s -> !s.toLowerCase().contains(currentInputLowerCase) || !seen.add(s));
             if (completions.isEmpty())
                 completions = null;
         }

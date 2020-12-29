@@ -1,0 +1,7 @@
+Automation Update pt 1
+Over the next few updates, this plugin will be getting new features focused on automation
+Added the `Automatic Crafting' Module. Use by renaming a dispenser to `AutoCrafter'
+
+Fixed Bugs in the `Better Mending', `Craft Enchanted Golden Apples', and `Universal Dyeing' Modules
+`Better Mending' Module now correctly handles giving experience to players that don't need to mend anything
+`Craft Enchanted Golden Apples' and `Universal Dyeing' Modules are now compatible with the `Automatic Crafting' Module

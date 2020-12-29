@@ -1,0 +1,10 @@
+Added the `Better Mending' Module
+The Mending enchantment intelligently calculates the optimal item to mend
+You can sneak-right click with mendable items in your hands to repair them
+
+Fixed Bugs in the `Instamine' and `Infinite Lava' Modules
+
+Updated the `Movable Tile Entities' Module
+Pistons can now move tile entities when powered directly via redstone or redstone torches
+Lecterns now store the page number they were on prior to being moved
+Planned additions include support for slime/honey and other redstone components such as observers

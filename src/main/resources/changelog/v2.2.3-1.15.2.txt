@@ -1,0 +1,5 @@
+The `Bugs and Thugs' Update
+Wrinkled out various bugs and inefficiencies in /scoreboard
+/scoreboard now updates properly for custom scoreboards (from datapacks for example)
+
+Pillager Captain issues regarding spawning without banners and failing to give bad omen have been fixed

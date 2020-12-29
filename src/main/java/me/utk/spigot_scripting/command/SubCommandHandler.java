@@ -25,6 +25,9 @@ public class SubCommandHandler {
             builder.append(id).append(", ");
         return builder.toString();
     }
+    public static List<String> getSubCommandIDsList() {
+        return new LinkedList<>(ALL_EXECUTORS.keySet());
+    }
 
     /**
      *
@@ -37,7 +40,7 @@ public class SubCommandHandler {
                 while (it.hasNext()) {
                     Pair<Method, ClassWrapper<Integer>> pair = it.next();
                     try {
-                        pair.first.invoke(sender, (Object) args);
+                        pair.first.invoke(null, sender, args);
                     } catch (Exception e) {
                         if (++pair.second.value >= 10)
                             it.remove();
@@ -64,7 +67,7 @@ public class SubCommandHandler {
                     Pair<Method, ClassWrapper<Integer>> pair = it.next();
                     try {
                         //noinspection unchecked
-                        completions.addAll((List<String>) pair.first.invoke(sender, (Object) args));
+                        completions.addAll((List<String>) pair.first.invoke(null, sender, args));
                     } catch (Exception e) {
                         if (++pair.second.value >= 10)
                             it.remove();

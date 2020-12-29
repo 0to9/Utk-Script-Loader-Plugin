@@ -1,0 +1,7 @@
+Added the `Better Infinity' Module
+Infinity can now be applied to crossbows
+Mending and Infinity are no longer mutually exclusive
+The Infinity enchantment no longer requires an arrow to be present
+
+Fixed Some Inconsistencies in the `Better Enchanting' Module's Configuration Settings
+The `Better Enchanting' Module will now correctly read configurations from the config file

@@ -1,0 +1,14 @@
+1.16.4 API Patch
+Quick and dirty patches to compile with the new 1.16.4 API.... it's been a while
+Added some 1.16 stuff like piglins, nether wood, netherite, and soul lanterns
+
+Changelog Entries
+I think I missed a few versions while working on internal stuff...
+Also, I flipped the version order to emphasize the plugin version over Minecraft's version
+
+Future Plans
+A major update to the plugin is in progress, which is why this current version is so scuffed
+
+And More Good News /s
+The autocrafter is disabled because it's broken (probably because of messy internal refactors)
+Hopefully the upcoming plugin revamp can do something about it (and that's wishful thinking not developer hints...)

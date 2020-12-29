@@ -1,0 +1,11 @@
+`Better Crafting' Module Revamp
+This module received a lot of love in the form of 240 deterministic recipes and around 118 billion non-deterministic recipes
+Users can now recovery resources by uncrafting various types of blocks (though at a minor loss)
+Thanks to the `Universal Dyeing' Module, most colored blocks can now be dyed different colors
+<ITALIC>Special thanks to <RESET><GREEN>nwang888<><ITALIC> for his significant contributions to this module
+
+Config File System Improved
+System is now more reliable
+Automatically reloads config if any individual setting or the entire config file is missing
+
+Internal Refactoring, Optimizations & Generalizations

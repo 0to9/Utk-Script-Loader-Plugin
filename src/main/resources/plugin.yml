@@ -2,12 +2,12 @@ name: UtkScriptLoaderPlugin
 version: 3.0.0-1.16.4
 author: utk003
 main: me.utk.spigot_scripting.plugin.PluginMain
-api-version: 1.16.4
+api-version: 1.16
 description: A custom script-loading program for easily configurable server modifications
 commands:
   usl:
     description: |
       Command for the Utk Script Loader Plugin
-      Check out \"/<command> help\" for more info
+      Check out "/usl help" for more info
     aliases: [vpp, utk, v++]
-    usage: Check out \"/<command> help\" for command usage info
+    usage: Check out "/usl help" for command usage info

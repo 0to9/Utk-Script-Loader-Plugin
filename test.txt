@@ -5,24 +5,16 @@
 
 #include me "test.txt"
 
-#ref Map_Entry java.util.Map.Entry
-
-import java.util;
-
-Map map = new HashMap();
-
 @Init : {
-    for (int i = 0; i < 10; i++)
-        map.put("" + i, "" + i);
+    int var = 0;
+    System.out.println(-1);
+    switch (var) {
+        case 0:
+        case 1:
+            System.out.println(1);
 
-    for ($Map_Entry e : map.entrySet())
-        System.out.println(e.getKey() + "->" + e.getValue());
-}
-
-struct Obj {
-    int val;
-
-    init Obj(int val) {
-        this.val = val;
+        default:
+            System.out.println(2);
+            break;
     }
 }

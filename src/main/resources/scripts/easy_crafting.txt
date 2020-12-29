@@ -1,5 +1,5 @@
 /*
- * This is the script file for adding easy crafting functionality.
+ * This is the main script file for adding easy crafting functionality.
  * In other words, its modules add features which improve the crafting
  * experience through commands and other interactions.
  *
@@ -16,9 +16,37 @@
  * @version December 20, 2020
  */
 
-// Comment any modules you don't want activated
+// --------------------------------------------------------------------------------- //
+// This is the script configuration section (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
+
 #include command_craft "easy_crafting/(command)craft.txt"
 // TODO create and add autocrafting module
 
-// DO NOT MODIFY ANY CODE BEYOND THIS POINT
-// (see warning in the file header comment)
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
+
+/*
+MIT License
+
+Copyright (c) 2020 Utkarsh Priyam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/

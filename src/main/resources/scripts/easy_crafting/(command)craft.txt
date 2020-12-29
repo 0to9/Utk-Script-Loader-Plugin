@@ -1,6 +1,6 @@
 /*
- * This is the script file for the /craft command for the easy crafting script.
- * This script adds functionality for the /craft command via other helper
+ * This is the script file for the 'craft' sub-command (from the easy crafting script).
+ * This script adds functionality for the sub-command via other helper
  * scripts. Current functionality includes paper and firework rocket crafting.
  *
  * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
@@ -9,19 +9,38 @@
  * thoroughly and are confident in your abilities to successfully modify the script.
  *
  * @author Utkarsh Priyam
- * @version December 22, 2020
+ * @version December 28, 2020
  */
 
-// Comment any modules you don't want activated
+// --------------------------------------------------------------------------------- //
+// This is the script configuration section (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
+
 #include paper_crafting     "(command)craft/paper_crafting.txt"
 #include rocket_crafting    "(command)craft/rocket_crafting.txt"
 
-// Set to true if the command should require a crafting
-// table in the player's inventory, and false otherwise
+/**
+ * Whether or not the 'craft' sub-command should require a crafting table
+ *
+ * Set to true if the sub-command should require a crafting
+ * table in the player's inventory, and false otherwise
+ */
 boolean REQUIRE_CRAFTING_TABLE = true;
 
-// DO NOT MODIFY ANY CODE BEYOND THIS POINT
-// (see warning in the file header comment)
+/**
+ * The colors to use for various command output messages
+ *
+ * ERROR_MESSAGE_COLOR is used for fatal errors (execution halts)
+ * WARNING_MESSAGE_COLOR is used for other errors (execution continues)
+ * SUCCESS_MESSAGE_COLOR is used for successful operation
+ */
+ChatColor ERROR_MESSAGE_COLOR = ChatColor.RED;
+ChatColor WARNING_MESSAGE_COLOR = ChatColor.GOLD;
+ChatColor SUCCESS_MESSAGE_COLOR = ChatColor.GREEN;
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
 import java.util;
 
@@ -31,20 +50,22 @@ import org.bukkit.entity;
 import org.bukkit.inventory;
 
 $exec craft : {
-    if (!(sender instanceof Player))
+    if (!(sender instanceof Player)) {
+        sender.sendMessage(ERROR_MESSAGE_COLOR + "Only players can use the `craft' sub-command.");
         return;
+    }
+
+    if (args.length == 0) {
+        sender.sendMessage(ERROR_MESSAGE_COLOR + "The `craft' sub-command requires at least 1 additional argument");
+        return;
+    }
 
     Player player = (Player) sender;
     PlayerInventory inventory = player.getInventory();
     if (REQUIRE_CRAFTING_TABLE && !inventory.contains(Material.CRAFTING_TABLE) &&
         inventory.getItemInOffHand().getType() != Material.CRAFTING_TABLE) {
 
-        sender.sendMessage("You must have a crafting table in your inventory to use the \"craft\" sub-command.");
-        return;
-    }
-
-    if (args.length == 0) {
-        sender.sendMessage("The \"craft\" sub-command requires arguments.");
+        sender.sendMessage(ERROR_MESSAGE_COLOR + "You must have a crafting table in your inventory to use the `craft' sub-command");
         return;
     }
 
@@ -57,7 +78,7 @@ $exec craft : {
                 paper_crafting::handleCraft(inventory, playerWorld, playerLocation);
             }
             $else {
-                sender.sendMessage("Paper crafting for the \"craft\" sub-command is currently disabled.");
+                sender.sendMessage(ERROR_MESSAGE_COLOR + "Paper crafting for the `craft' sub-command is currently disabled");
             }
             break;
 
@@ -66,24 +87,23 @@ $exec craft : {
                 rocket_crafting::handleCraft(player, inventory, playerWorld, playerLocation, args);
             }
             $else {
-                sender.sendMessage("Rocket crafting for the \"craft\" sub-command is currently disabled.");
+                sender.sendMessage(ERROR_MESSAGE_COLOR + "Rocket crafting for the `craft' sub-command is currently disabled");
             }
             break;
 
         default:
-            sender.sendMessage("You must specify which automated bulk crafting recipe you wish use.");
+            sender.sendMessage(ERROR_MESSAGE_COLOR + "You must specify a valid automated bulk crafting recipe");
             break;
     }
 }
 
 $comp craft : {
+    List list = new LinkedList();
     if (!(sender instanceof Player))
-        return null;
+        return list;
 
-    List list = null;
     switch (args.length) {
         case 1:
-            list = new LinkedList();
             $ifIncluded(paper_crafting) {
                 list.add("paper");
             }
@@ -95,7 +115,6 @@ $comp craft : {
         case 2:
             $ifIncluded(rocket_crafting) {
                 if (args[0].equals("rockets")) {
-                    list = new LinkedList();
                     list.add("1");
                     list.add("2");
                     list.add("3");
@@ -124,3 +143,31 @@ void addToInventory(ItemStack itemStack, int amount, Inventory inv, World world,
         }
     }
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
+
+/*
+MIT License
+
+Copyright (c) 2020 Utkarsh Priyam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/

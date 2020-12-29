@@ -1,0 +1,5 @@
+Thug Bug Fix
+Bad Omen is now correctly applied to any player that kills a pillager captain
+
+`Scoreboard' Module Improvement
+Scoreboard auto-updating is now on a 60 second, asynchronous cycle, which should reduce server lag significantly

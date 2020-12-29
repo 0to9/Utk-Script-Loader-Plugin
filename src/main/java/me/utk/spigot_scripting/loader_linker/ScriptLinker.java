@@ -359,7 +359,8 @@ public class ScriptLinker {
                     }
                     builder.append(nextToken);
                     break;
-                    
+
+                // TODO support single-statement try/catches and do/whiles properly
                 case "for":
                     builder.append(token);
                     builder.append(maybeParseSpace(builder, st)); // (
@@ -377,6 +378,22 @@ public class ScriptLinker {
                                 .append(" = (").append(obj[0]).append(") it.next(); ");
                         builder.append(statement).append("}");
                     }
+                    break;
+
+                // edge case for switch/case parsing... the library is weird...
+                case "case":
+                case "default":
+                    builder.append(token);
+                    if (token.equals("case")) {
+                        tok = maybeParseSpace(builder, st);
+                        while (!tok.equals(":")) {
+                            builder.append(tok); // expr
+                            tok = maybeParseSpace(builder, st);
+                        }
+                        builder.append(tok); // :
+                    } else
+                        builder.append(maybeParseSpace(builder, st)); // :
+                    builder.append(";");
                     break;
 
                 case ".":

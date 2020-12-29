@@ -4,32 +4,43 @@ import javassist.CtClass;
 
 import me.utk.spigot_scripting.command.CommandUtil;
 import me.utk.spigot_scripting.event.EventsUtil;
-import me.utk.spigot_scripting.event.ScriptInitializationWrapper;
-import me.utk.spigot_scripting.event.ScriptTerminationWrapper;
 import me.utk.spigot_scripting.loader_linker.CustomClassPool;
 import me.utk.spigot_scripting.loader_linker.ScriptLinker;
 import me.utk.spigot_scripting.loader_linker.ScriptLoader;
 import me.utk.spigot_scripting.script.ScriptParser;
-import me.utk.util.function.void_lambda.VoidLambda0;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        CtClass.debugDump = "dump";
+        String dump = null;
+        List<String> scripts = new LinkedList<>();
+        for (String arg : args) {
+            int eqInd = arg.indexOf("=");
+            String descr = arg.substring(0, eqInd + 1), filePath = arg.substring(eqInd + 1);
+            switch (descr) {
+                case "-dump=":
+                    if (dump != null)
+                        throw new IllegalArgumentException("Cannot have more than 1 dump file");
+                    dump = filePath;
+                    break;
 
-        String testPath = "test.txt";
-        String scriptPath = "src/main/resources/scripts/main.txt"; // temporary file path
-        String temp = "src/main/resources/scripts/scoreboard/distance.txt";
+                case "-script=":
+                    scripts.add(filePath);
+                    break;
 
-        testScript(scriptPath, () -> {
-            ScriptInitializationWrapper.handleEvent();
-            ScriptTerminationWrapper.handleEvent();
-        });
+                default:
+                    throw new IllegalArgumentException("\"" + descr + "\" is not a valid argument descriptor");
+            }
+        }
+
+        CtClass.debugDump = dump;
+
+        testScripts(scripts.toArray(new String[0]));
     }
 
-    private static void testScript(String filepath, VoidLambda0 todo) {
+    private static void testScripts(String... filepath) {
         createScripts(filepath);
-        todo.run();
-        destroyScripts();
     }
 
     public static void createScripts(String... filePaths) {

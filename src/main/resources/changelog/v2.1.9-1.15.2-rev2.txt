@@ -1,0 +1,11 @@
+Configuration File Changes
+Missing configurations now default to the value of `Default Configuration Value'
+`Default Configuration Value' defaults to <RESET><GREEN>true
+Admins can use /config to modify configuration values while the plugin is loaded
+
+More Recovery Recipes
+Now Sandstone and Red Sandstone can be recovered to Sand and Red Sand, respectively
+Prismarine, Prismarine Bricks, and Dark Prismarine can now be turned back into Prismarine Shards
+
+`Automatic Crafting' Module Bug Fix
+Fixed <ITALIC>ClassCastException<> in this module

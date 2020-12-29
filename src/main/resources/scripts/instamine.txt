@@ -1,5 +1,5 @@
 /*
- * This is the script file for adding instamine-like functionality
+ * This is the main script file for adding instamine-like functionality
  * for many blocks which do not support it in the default vanilla game.
  *
  * This instamine script is modularized by general block type categories,
@@ -16,7 +16,10 @@
  * @version December 18, 2020
  */
 
-// Comment any modules you don't want activated
+// --------------------------------------------------------------------------------- //
+// This is the script configuration section (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
+
 #include ores               "instamine/ores.txt"
 #include glass              "instamine/glass.txt"
 #include concrete           "instamine/concrete.txt"
@@ -26,8 +29,9 @@
 #include lighting_blocks    "instamine/lighting_blocks.txt"
 #include blocks_of          "instamine/blocks_of.txt"
 
-// DO NOT MODIFY ANY CODE BEYOND THIS POINT
-// (see warning in the file header comment)
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
 import java.util;
 
@@ -128,8 +132,7 @@ void breakBlock(Block block, Player player, Set validTools, int minHaste, int mi
     if (potionEffect != null)
         return;
 
-    // Make sure player is using a valid tool
-    // with the minimum required level of Efficiency
+    // Make sure player is using a valid tool with the minimum required level of Efficiency
     ItemStack mainHandItem = player.getInventory().getItemInMainHand();
     Material itemType = mainHandItem.getType();
     if (!validTools.contains(itemType))
@@ -151,6 +154,10 @@ void breakBlock(Block block, Player player, Set validTools, int minHaste, int mi
     // (Naturally) Drop 1 of the item of the block in the world at the location of the block
     block.breakNaturally(mainHandItem);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
 
 /*
 MIT License

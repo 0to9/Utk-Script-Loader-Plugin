@@ -1,0 +1,5 @@
+Fixed a Bug in the `Craft Enchanted Golden Apples' Module
+The bug allowed players to craft gapples without the required potions
+
+Removed Extraneous Debug Print Statements
+Removed <ITALIC>Bukkit.broadcastMessage(...)<> calls left over from earlier development

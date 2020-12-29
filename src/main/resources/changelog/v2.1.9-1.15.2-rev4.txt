@@ -1,0 +1,3 @@
+`Scoreboard' Module Gets Some Love
+/scoreboard has been optimized to prevent server-crippling lag on command calls
+/scoreboard no longer automatically removes casing from command arguments, adding support for mixed-case objective names

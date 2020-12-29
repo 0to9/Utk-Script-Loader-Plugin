@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.utk</groupId>
-    <artifactId>utk-script-loader-spigot-plugin</artifactId>
+    <artifactId>utk-script-loader-plugin</artifactId>
     <name>Utk Script Loader Plugin</name>
     <version>Alpha</version>
     <packaging>jar</packaging>

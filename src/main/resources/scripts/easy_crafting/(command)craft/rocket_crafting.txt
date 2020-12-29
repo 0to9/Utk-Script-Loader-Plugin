@@ -1,5 +1,5 @@
 /*
- * This is the script file for the rocket crafting module of the /craft command.
+ * This is the script file for the rocket crafting module of the 'craft' sub-command.
  * This module allows players to craft all paper and gunpowder present in their
  * inventory directly into firework rockets of the specified power level.
  *
@@ -9,13 +9,14 @@
  * thoroughly and are confident in your abilities to successfully modify the script.
  *
  * @author Utkarsh Priyam
- * @version December 22, 2020
+ * @version December 28, 2020
  */
 
-// DO NOT MODIFY ANY CODE BEYOND THIS POINT
-// (see warning in the file header comment)
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
-#include craft_command "../(command)craft.txt"
+#include command "../(command)craft.txt"
 
 import org.bukkit;
 import org.bukkit.entity;
@@ -24,7 +25,7 @@ import org.bukkit.inventory.meta;
 
 void handleCraft(Player player, PlayerInventory inventory, World playerWorld, Location playerLocation, String[] args) {
     if (args.length == 1) {
-        player.sendMessage("Specify firework rocket target power level.");
+        player.sendMessage(command::ERROR_MESSAGE_COLOR + "Specify firework rocket target power level.");
         return;
     }
 
@@ -43,7 +44,7 @@ void handleCraft(Player player, PlayerInventory inventory, World playerWorld, Lo
             break;
 
         default:
-            player.sendMessage("Please enter a valid firework rocket target power level.");
+            player.sendMessage(command::ERROR_MESSAGE_COLOR + "Please enter a valid firework rocket target power level.");
             return;
     }
 
@@ -66,21 +67,49 @@ void handleCraft(Player player, PlayerInventory inventory, World playerWorld, Lo
     ItemStack rocketStack = new ItemStack(Material.FIREWORK_ROCKET);
     FireworkMeta fireworkMeta = (FireworkMeta) rocketStack.getItemMeta();
     if (fireworkMeta == null) {
-        player.sendMessage("The rocket module of the \"craft\" sub-command is currently broken.");
+        player.sendMessage(command::ERROR_MESSAGE_COLOR + "The rocket module of the `craft' sub-command is currently broken.");
 
-        craft_command::addToInventory(new ItemStack(Material.PAPER), paper, inventory, playerWorld, playerLocation);
-        craft_command::addToInventory(new ItemStack(Material.GUNPOWDER), gunpowder, inventory, playerWorld, playerLocation);
+        command::addToInventory(new ItemStack(Material.PAPER), paper, inventory, playerWorld, playerLocation);
+        command::addToInventory(new ItemStack(Material.GUNPOWDER), gunpowder, inventory, playerWorld, playerLocation);
         return;
     }
     fireworkMeta.setPower(power);
     rocketStack.setItemMeta(fireworkMeta);
 
-    craft_command::addToInventory(rocketStack, rocketsToMake, inventory, playerWorld, playerLocation);
+    command::addToInventory(rocketStack, rocketsToMake, inventory, playerWorld, playerLocation);
 
     rocketsToMake /= 3;
     paper -= rocketsToMake;
     gunpowder -= rocketsToMake * power;
 
-    craft_command::addToInventory(new ItemStack(Material.PAPER), paper, inventory, playerWorld, playerLocation);
-    craft_command::addToInventory(new ItemStack(Material.GUNPOWDER), gunpowder, inventory, playerWorld, playerLocation);
+    command::addToInventory(new ItemStack(Material.PAPER), paper, inventory, playerWorld, playerLocation);
+    command::addToInventory(new ItemStack(Material.GUNPOWDER), gunpowder, inventory, playerWorld, playerLocation);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
+
+/*
+MIT License
+
+Copyright (c) 2020 Utkarsh Priyam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/

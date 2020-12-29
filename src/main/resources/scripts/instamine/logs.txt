@@ -12,8 +12,10 @@
  * @version December 18, 2020
  */
 
-// DO NOT MODIFY ANY CODE BEYOND THIS POINT
-// (see warning in the file header comment)
+/*
+ * DO NOT MODIFY ANY CODE BEYOND THIS POINT
+ * (see warning in the file header comment)
+ */
 
 import java.util;
 

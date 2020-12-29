@@ -1,0 +1,7 @@
+Fixed Various Bugs in the `Universal Dyeing' Module
+Module now correctly processes crafting requests and removes the right number of ingredients
+The 2x2 crafting grid has now been accounted for in the module
+
+Fixed Overlapping Recipes in the `Recovery Recipes' Module
+Wood and log conversion recipes will no longer conflict with the plank creation recipes
+Cobblestone recovery has been removed and will no longer conflict with stone button creation

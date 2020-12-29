@@ -13,10 +13,17 @@
  * @version December 21, 2020
  */
 
-// Comment any modules you don't want activated
+// --------------------------------------------------------------------------------- //
+// This is the script configuration section (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
+
 #include instamine      "instamine.txt"
 #include easy_crafting  "easy_crafting.txt"
 #include scoreboard     "scoreboard.txt"
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
 
 /*
 MIT License

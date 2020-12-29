@@ -1,13 +1,17 @@
 package me.utk.spigot_scripting.plugin.command;
 
 import me.utk.spigot_scripting.command.CommandUtil;
+import me.utk.spigot_scripting.command.SubCommandHandler;
 import me.utk.spigot_scripting.plugin.PluginMain;
+import me.utk.util.function.lambda.Lambda0;
+import me.utk.util.function.lambda.Lambda1;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static me.utk.spigot_scripting.command.SubCommandHandler.tabComplete;
 import static org.bukkit.ChatColor.*;
@@ -28,11 +32,28 @@ public class PluginTabCompleter implements TabCompleter {
                 completions.add("help");
                 completions.add("version");
                 completions.add("changelog");
+                completions.add("list");
+
+                completions.addAll(SubCommandHandler.getSubCommandIDsList());
+
+                if (PluginCommandExecutor.canReload(sender))
+                    completions.add("reload");
                 break;
 
             case 2:
-                if (args[0].equals("changelog"))
-                    completions.addAll(ChangelogHandler.ALL_STORED_VERSION_LOGS.keySet());
+                switch (args[0]) {
+                    case "changelog":
+                        completions.addAll(ChangelogHandler.VERSION_ORDER);
+                        break;
+
+                    case "reload":
+                        if (PluginCommandExecutor.canReload(sender))
+                            completions.add("confirm");
+                        break;
+
+                    default:
+                        break;
+                }
                 break;
 
             default:
@@ -45,52 +66,40 @@ public class PluginTabCompleter implements TabCompleter {
     }
 
     public static class ChangelogHandler {
-        private static final Map<String, ChangelogSection[]> ALL_STORED_VERSION_LOGS = new HashMap<>();
+        private static final Map<String, List<ChangelogSection>> ALL_STORED_VERSION_LOGS = new HashMap<>();
+        private static final List<String> VERSION_ORDER = new LinkedList<>();
 
         private static final String INVALID_LOG_MESSAGE =
-                "" + RESET + YELLOW + ITALIC + "No changelog is available for version ";
+                "" + RESET + AQUA + ITALIC + "No changelog is available for this version";
 
-        private static String[] formatVersion(String version) {
-            String stripped;
-            if (version.isEmpty() || version.charAt(0) != 'v') {
-                stripped = version;
-                version = "v" + version;
-            } else
-                stripped = version.substring(1);
-
-            return new String[]{stripped, version};
+        private static String stripVersion(String version) {
+            if (!version.isEmpty() && version.charAt(0) == 'v')
+                version = version.substring(1);
+            return version;
         }
 
         public static ChangelogSection[] getVersionLog(String version) {
-            String[] vers = formatVersion(version);
-
-            ChangelogSection[] changelog = ALL_STORED_VERSION_LOGS.get(vers[1]);
+            List<ChangelogSection> changelog = ALL_STORED_VERSION_LOGS.get(version);
+            ChangelogSection[] messages;
             if (changelog == null)
-                changelog = new ChangelogSection[]{
-                        new ChangelogSection(INVALID_LOG_MESSAGE + vers[0])
+                messages = new ChangelogSection[]{
+                        new ChangelogSection(INVALID_LOG_MESSAGE)
                 };
-            return changelog;
+            else messages = changelog.toArray(new ChangelogSection[0]);
+            return messages;
         }
 
-        public static void updateVersionLog(String version, ChangelogSection... log) {
-            ALL_STORED_VERSION_LOGS.put(formatVersion(version)[1], log);
-        }
+        private static final Function<String, List<ChangelogSection>> NEW_LIST_MAKER = k -> {
+            VERSION_ORDER.add(k);
+            return new LinkedList<>();
+        };
         public static void appendVersionLog(String version, ChangelogSection... log) {
-            version = formatVersion(version)[1];
-
-            ChangelogSection[] oldLog = ALL_STORED_VERSION_LOGS.get(version);
-            int oldLen = oldLog == null ? 0 : oldLog.length;
-
-            ChangelogSection[] newLog = new ChangelogSection[oldLen + log.length];
-            if (oldLog != null)
-                System.arraycopy(oldLog, 0, newLog, 0, oldLen);
-            System.arraycopy(log, 0, newLog, oldLen, log.length);
-
-            ALL_STORED_VERSION_LOGS.put(version, newLog);
+            List<ChangelogSection> logs = ALL_STORED_VERSION_LOGS.computeIfAbsent(version, NEW_LIST_MAKER);
+            logs.addAll(Arrays.asList(log));
         }
 
         public static String getLogHeader(String version) {
-            return "" + YELLOW + BOLD + PluginMain.PLUGIN_NAME + " Version " + formatVersion(version)[0] + " Changelog";
+            return "" + YELLOW + BOLD + PluginMain.PLUGIN_NAME + " Version " + stripVersion(version) + " Changelog";
         }
 
         public static class ChangelogSection {
@@ -142,6 +151,35 @@ public class PluginTabCompleter implements TabCompleter {
                 builder.append(text);
                 builder.append(ChatColor.RESET);
                 return builder.toString();
+            }
+
+            public static ChatColor toChatColor(String code) {
+                switch (code) {
+                    case "<BLACK>": return BLACK;
+                    case "<DARK_BLUE>": return DARK_BLUE;
+                    case "<DARK_GREEN>": return DARK_GREEN;
+                    case "<DARK_AQUA>": return DARK_AQUA;
+                    case "<DARK_RED>": return DARK_RED;
+                    case "<DARK_PURPLE>": return DARK_PURPLE;
+                    case "<GOLD>": return GOLD;
+                    case "<GRAY>": return GRAY;
+                    case "<DARK_GRAY>": return DARK_GRAY;
+                    case "<BLUE>": return BLUE;
+                    case "<GREEN>": return GREEN;
+                    case "<AQUA>": return AQUA;
+                    case "<RED>": return RED;
+                    case "<LIGHT_PURPLE>": return LIGHT_PURPLE;
+                    case "<YELLOW>": return YELLOW;
+                    case "<WHITE>": return WHITE;
+                    case "<MAGIC>": return MAGIC;
+                    case "<BOLD>": return BOLD;
+                    case "<STRIKETHROUGH>": return STRIKETHROUGH;
+                    case "<UNDERLINE>": return UNDERLINE;
+                    case "<ITALIC>": return ITALIC;
+                    case "<RESET>": return RESET;
+
+                    default: return null;
+                }
             }
         }
     }

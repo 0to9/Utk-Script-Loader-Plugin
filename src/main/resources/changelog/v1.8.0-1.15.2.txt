@@ -1,0 +1,8 @@
+The Bug Fix Update
+Fixed <ITALIC>ClassCastException<> in the `Infinite Lava' Module
+Fixed <ITALIC>NullPointerException<> and <ITALIC>IllegalArgumentException<> in /craft
+Fixed a vanilla bug which summoned normal zombies as reinforcements for other zombie type mobs
+
+The Return of the <RESET><GREEN>nwang888
+He's back for more `data entry'
+Be on the lookout for his contributions (in the next version, hopefully)

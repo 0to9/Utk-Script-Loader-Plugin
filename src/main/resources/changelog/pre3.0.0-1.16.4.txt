@@ -1,0 +1,12 @@
+Script Away
+The basic script parsing, linking, and compiling framework is in place
+Over time, more scripting QOL features may be added
+
+Update Work
+Work has begun for the major plugin update
+All plugin modules are slowly being converted to the new scripting format
+Currently, only the `Easy Crafting', `Instamine', and `Scoreboard' Modules have been translated
+
+Changelog Improvements
+The changelog loading system has been revamped
+Logs are now stored internally in files and have automatic intelligent formatting

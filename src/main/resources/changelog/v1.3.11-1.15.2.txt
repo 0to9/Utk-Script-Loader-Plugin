@@ -1,0 +1,8 @@
+The Color Update
+Soon, the entire plugin will be colored (in the near future)
+
+Enlisted the help of one <RESET><GREEN>nwang888<> for `data entry'
+His contributions will be appearing in the next released version of the plugin (hopefully)
+
+Configuration values in files are now carried over between plugin version upgrades
+4 and 1/2 hours spent working on a singular feature at the request of <RESET><GOLD>SanTech

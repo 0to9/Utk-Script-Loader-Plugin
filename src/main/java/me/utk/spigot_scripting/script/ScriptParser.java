@@ -5,7 +5,6 @@ import me.utk.spigot_scripting.util.FileUtil;
 import me.utk.spigot_scripting.util.exception.LinkingException;
 import me.utk.spigot_scripting.util.exception.ParsingException;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;

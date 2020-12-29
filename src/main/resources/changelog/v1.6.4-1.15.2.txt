@@ -1,0 +1,7 @@
+Created the `Better Enchanting' Module
+Encapsulates the old `Better Mending' Module
+Will hold all enchantment related changes
+
+Added the `Better Anvils' Module under the `Better Enchanting' Module
+Anvils can now perform repairs and upgrades that cost up to 1000 levels as opposed to the default of 40
+In order to get rid of the now incorrect <RESET><RED>Too Expensive<> warning, use a client-side mod such as `Fix Anvils' for the Fabric Mod Loader
