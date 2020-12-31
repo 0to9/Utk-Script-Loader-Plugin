@@ -1,0 +1,7 @@
+`Scoreboard' Module Complete
+Lots of blood, sweat, and tears later....
+
+ErrorLogger
+Error Output is now colored for console
+
+More Internal Stuff

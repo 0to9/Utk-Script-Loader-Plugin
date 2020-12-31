@@ -1,16 +1,16 @@
 /*
- * This is the script file for the 'craft' sub-command (from the easy crafting script).
- * This script adds functionality for the sub-command via other helper
- * scripts. Current functionality includes paper and firework rocket crafting.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 28, 2020
- */
+This is the script file for the 'craft' sub-command (from the easy crafting script).
+This script adds functionality for the sub-command via other helper
+scripts. Current functionality includes paper and firework rocket crafting.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 30, 2020
+*/
 
 // --------------------------------------------------------------------------------- //
 // This is the script configuration section (see warning in the file header comment) //
@@ -19,21 +19,21 @@
 #include paper_crafting     "(command)craft/paper_crafting.txt"
 #include rocket_crafting    "(command)craft/rocket_crafting.txt"
 
-/**
- * Whether or not the 'craft' sub-command should require a crafting table
- *
- * Set to true if the sub-command should require a crafting
- * table in the player's inventory, and false otherwise
- */
+/*
+Whether or not the 'craft' sub-command should require a crafting table
+
+Set to true if the sub-command should require a crafting
+table in the player's inventory, and false otherwise
+*/
 boolean REQUIRE_CRAFTING_TABLE = true;
 
-/**
- * The colors to use for various command output messages
- *
- * ERROR_MESSAGE_COLOR is used for fatal errors (execution halts)
- * WARNING_MESSAGE_COLOR is used for other errors (execution continues)
- * SUCCESS_MESSAGE_COLOR is used for successful operation
- */
+/*
+The colors to use for various command output messages
+
+ERROR_MESSAGE_COLOR is used for fatal errors (execution halts)
+WARNING_MESSAGE_COLOR is used for other errors (execution continues)
+SUCCESS_MESSAGE_COLOR is used for successful operation
+*/
 ChatColor ERROR_MESSAGE_COLOR = ChatColor.RED;
 ChatColor WARNING_MESSAGE_COLOR = ChatColor.GOLD;
 ChatColor SUCCESS_MESSAGE_COLOR = ChatColor.GREEN;
@@ -50,98 +50,97 @@ import org.bukkit.entity;
 import org.bukkit.inventory;
 
 $exec craft : {
-    if (!(sender instanceof Player)) {
-        sender.sendMessage(ERROR_MESSAGE_COLOR + "Only players can use the `craft' sub-command.");
-        return;
-    }
+   if (!(sender instanceof Player)) {
+      sender.sendMessage(ERROR_MESSAGE_COLOR + "Only players can use the `craft' sub-command.");
+      return;
+   }
 
-    if (args.length == 0) {
-        sender.sendMessage(ERROR_MESSAGE_COLOR + "The `craft' sub-command requires at least 1 additional argument");
-        return;
-    }
+   if (args.length == 0) {
+      sender.sendMessage(ERROR_MESSAGE_COLOR + "The `craft' sub-command requires at least 1 additional argument");
+      return;
+   }
 
-    Player player = (Player) sender;
-    PlayerInventory inventory = player.getInventory();
-    if (REQUIRE_CRAFTING_TABLE && !inventory.contains(Material.CRAFTING_TABLE) &&
-        inventory.getItemInOffHand().getType() != Material.CRAFTING_TABLE) {
+   Player player = (Player) sender;
+   PlayerInventory inventory = player.getInventory();
+   if (REQUIRE_CRAFTING_TABLE && !inventory.contains(Material.CRAFTING_TABLE) && inventory.getItemInOffHand().getType() != Material.CRAFTING_TABLE) {
+      sender.sendMessage(ERROR_MESSAGE_COLOR + "You must have a crafting table in your inventory to use the `craft' sub-command");
+      return;
+   }
 
-        sender.sendMessage(ERROR_MESSAGE_COLOR + "You must have a crafting table in your inventory to use the `craft' sub-command");
-        return;
-    }
+   World playerWorld = player.getWorld();
+   Location playerLocation = player.getLocation();
 
-    World playerWorld = player.getWorld();
-    Location playerLocation = player.getLocation();
+   switch (args[0]) {
+      case "paper": {
+         $ifIncluded(paper_crafting) {
+            paper_crafting::handleCraft(inventory, playerWorld, playerLocation);
+         }
+         $else {
+            sender.sendMessage(ERROR_MESSAGE_COLOR + "Paper crafting for the `craft' sub-command is currently disabled");
+         }
+         break;
+      }
 
-    switch (args[0]) {
-        case "paper":
-            $ifIncluded(paper_crafting) {
-                paper_crafting::handleCraft(inventory, playerWorld, playerLocation);
-            }
-            $else {
-                sender.sendMessage(ERROR_MESSAGE_COLOR + "Paper crafting for the `craft' sub-command is currently disabled");
-            }
-            break;
+      case "rockets": {
+         $ifIncluded(rocket_crafting) {
+            rocket_crafting::handleCraft(player, inventory, playerWorld, playerLocation, args);
+         }
+         $else {
+            sender.sendMessage(ERROR_MESSAGE_COLOR + "Rocket crafting for the `craft' sub-command is currently disabled");
+         }
+         break;
+      }
 
-        case "rockets":
-            $ifIncluded(rocket_crafting) {
-                rocket_crafting::handleCraft(player, inventory, playerWorld, playerLocation, args);
-            }
-            $else {
-                sender.sendMessage(ERROR_MESSAGE_COLOR + "Rocket crafting for the `craft' sub-command is currently disabled");
-            }
-            break;
-
-        default:
-            sender.sendMessage(ERROR_MESSAGE_COLOR + "You must specify a valid automated bulk crafting recipe");
-            break;
-    }
+      default: {
+         sender.sendMessage(ERROR_MESSAGE_COLOR + "You must specify a valid automated bulk crafting recipe");
+         break;
+      }
+   }
 }
 
 $comp craft : {
-    List list = new LinkedList();
-    if (!(sender instanceof Player))
-        return list;
+   List list = new LinkedList();
+   if (!(sender instanceof Player)) return list;
 
-    switch (args.length) {
-        case 1:
-            $ifIncluded(paper_crafting) {
-                list.add("paper");
-            }
-            $ifIncluded(rocket_crafting) {
-                list.add("rockets");
-            }
-            break;
+   switch (args.length) {
+      case 1: {
+         $ifIncluded(paper_crafting) {
+            list.add("paper");
+         }
+         $ifIncluded(rocket_crafting) {
+            list.add("rockets");
+         }
+         break;
+      }
 
-        case 2:
-            $ifIncluded(rocket_crafting) {
-                if (args[0].equals("rockets")) {
-                    list.add("1");
-                    list.add("2");
-                    list.add("3");
-                }
+      case 2: {
+         $ifIncluded(rocket_crafting) {
+            if (args[0].equals("rockets")) {
+               list.add("1");
+               list.add("2");
+               list.add("3");
             }
-            break;
-    }
-    return list;
+         }
+         break;
+      }
+   }
+   return list;
 }
 
 void addToInventory(ItemStack itemStack, int amount, Inventory inv, World world, Location loc) {
-    while (amount > 0) {
-        ItemStack copy = itemStack.clone();
-        copy.setItemMeta(itemStack.getItemMeta());
-        copy.setAmount(Math.min(amount, 64));
-        amount -= 64;
+   while (amount > 0) {
+      ItemStack copy = itemStack.clone();
+      copy.setItemMeta(itemStack.getItemMeta());
+      copy.setAmount(Math.min(amount, 64));
+      amount -= 64;
 
-        Map map = inv.addItem(new ItemStack[]{copy}); // no varargs in java code injector
-        if (!map.isEmpty()) {
-            Iterator it = map.keySet().iterator();
-            while (it.hasNext()) {
-                ItemStack stackToDrop = (ItemStack) map.get(it.next());
-                if (stackToDrop != null && stackToDrop.getType() != Material.AIR && stackToDrop.getAmount() != 0)
-                    world.dropItem(loc, stackToDrop);
-            }
-        }
-    }
+      Map map = inv.addItem(new ItemStack[]{copy}); // no varargs in java code injector
+      for (ItemStack stackToDrop : map.keySet()) if (isValid(stackToDrop)) world.dropItem(loc, stackToDrop);
+   }
+}
+
+boolean isValid(ItemStack stack) {
+   return stack != null && stack.getType() != Material.AIR && stack.getAmount() != 0;
 }
 
 // --------------------------------------------------------------------------------- //

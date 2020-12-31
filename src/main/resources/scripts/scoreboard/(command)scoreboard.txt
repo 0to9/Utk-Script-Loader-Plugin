@@ -1,41 +1,41 @@
 /*
- * This is the script file for the 'scoreboard' sub-command.
- * In addition to the code provided here, this script uses a utility
- * script file that provides most of the actual scoreboard loading logic.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 28, 2020
- */
+This is the script file for the 'scoreboard' sub-command.
+In addition to the code provided here, this script uses a utility
+script file that provides most of the actual scoreboard loading logic.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 30, 2020
+*/
 
 // --------------------------------------------------------------------------------- //
 // This is the script configuration section (see warning in the file header comment) //
 // --------------------------------------------------------------------------------- //
 
-/**
- * The automatic scoreboard refresh rate
- */
+/*
+The automatic scoreboard refresh rate
+*/
 double SCOREBOARD_UPDATE_IN_SECONDS = 0.5;
 
-/**
- * The internal 'disable scoreboard slot' code
- *
- * If this overlaps with an objective id,
- * scoreboard clearing may not work as intended.
- */
+/*
+The internal 'disable scoreboard slot' code
+
+If this overlaps with an objective id,
+scoreboard clearing may not work as intended.
+*/
 String SLOT_DISABLE_CODE = "disable_slot";
 
-/**
- * The colors to use for various command output messages
- *
- * ERROR_MESSAGE_COLOR is used for fatal errors (execution halts)
- * WARNING_MESSAGE_COLOR is used for other errors (execution continues)
- * SUCCESS_MESSAGE_COLOR is used for successful operation
- */
+/*
+The colors to use for various command output messages
+
+ERROR_MESSAGE_COLOR is used for fatal errors (execution halts)
+WARNING_MESSAGE_COLOR is used for other errors (execution continues)
+SUCCESS_MESSAGE_COLOR is used for successful operation
+*/
 ChatColor ERROR_MESSAGE_COLOR = ChatColor.RED;
 ChatColor WARNING_MESSAGE_COLOR = ChatColor.GOLD;
 ChatColor SUCCESS_MESSAGE_COLOR = ChatColor.GREEN;
@@ -52,247 +52,263 @@ import org.bukkit;
 import org.bukkit.command;
 import org.bukkit.entity;
 import org.bukkit.event.player;
+import org.bukkit.scheduler;
 
 import java.util;
 import java.io;
 
-/**
- * Executes a call to the 'scoreboard' sub-command
- */
+/*
+Executes a call to the 'scoreboard' sub-command
+*/
 $exec scoreboard : {
-    if (!(sender instanceof Player)) {
-        sender.sendMessage(ERROR_MESSAGE_COLOR + "Only players can use the `scoreboard' sub-command");
-        return;
-    }
+   if (!(sender instanceof Player)) {
+      sender.sendMessage(ERROR_MESSAGE_COLOR + "Only players can use the `scoreboard' sub-command");
+      return;
+   }
 
-    if (args.length == 0) {
-        sender.sendMessage(ERROR_MESSAGE_COLOR + "The `scoreboard' sub-command requires at least 1 additional argument");
-        return;
-    }
+   if (args.length == 0) {
+      sender.sendMessage(ERROR_MESSAGE_COLOR + "The `scoreboard' sub-command requires at least 1 additional argument");
+      return;
+   }
 
-    String[] mySettings = util::getOrCreateConfig(sender.getName());
-    switch (args[0]) {
-        case "load":
-            if (args.length == 1)
-                sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Loaded own scoreboard settings");
-            else {
-                if (args.length != 2)
-                    sender.sendMessage(WARNING_MESSAGE_COLOR + "The `scoreboard load' sub-command takes at most 1 additional argument");
+   String[] mySettings = util::getOrCreateConfig(sender.getName());
+   switch (args[0]) {
+      case "load": {
+         if (args.length == 1) sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Loaded own scoreboard settings");
+         else {
+            if (args.length != 2) sender.sendMessage(WARNING_MESSAGE_COLOR + "The `scoreboard load' sub-command takes at most 1 additional argument");
 
-                String[] otherSettings = (String[]) util::settings.get(args[1]);
-                if (otherSettings == null) {
-                    sender.sendMessage(ERROR_MESSAGE_COLOR + "You must load a valid player's scoreboard configuration settings");
-                    return;
-                }
-                for (int i = 0; i < 3; i++)
-                    mySettings[i] = otherSettings[i];
-                sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Loaded " + args[1] + "'s scoreboard settings");
+            String[] otherSettings = (String[]) util::settings.get(args[1]);
+            if (otherSettings == null) {
+               sender.sendMessage(ERROR_MESSAGE_COLOR + "You must load a valid player's scoreboard configuration settings");
+               return;
             }
-            break;
+            for (int i = 0; i < mySettings.length; i++) mySettings[i] = otherSettings[i];
+            sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Loaded " + args[1] + "'s scoreboard settings");
+         }
+         break;
+      }
 
-        case "clear":
-        case "default":
-            boolean isClear = args[0].equals("clear");
-            String replacementSetting = isClear ? SLOT_DISABLE_CODE : null;
-            if (args.length == 1) {
-                for (int i = 0; i < 3; i++)
-                    mySettings[i] = replacementSetting;
+      case "clear":
+      case "default": {
+         boolean isClear = args[0].equals("clear");
+         String replacementSetting = isClear ? SLOT_DISABLE_CODE : null;
+         if (args.length == 1) {
+            for (int i = 0; i < 3; i++) mySettings[i] = replacementSetting;
 
-                if (isClear)
-                    sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Cleared all scoreboards");
-                else
-                    sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Set all scoreboards to server defaults");
-            } else {
-                if (args.length != 2)
-                    sender.sendMessage(WARNING_MESSAGE_COLOR + "The `scoreboard " + args[0] + "' sub-command takes at most 1 additional argument");
+            if (isClear) sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Cleared all scoreboards");
+            else sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Set all scoreboards to server defaults");
+         } else {
+            if (args.length != 2) sender.sendMessage(
+               WARNING_MESSAGE_COLOR + "The `scoreboard " + args[0] + "' sub-command takes at most 1 additional argument"
+            );
 
-                String scoreboardID;
-                switch (args[1]) {
-                    case "below_name":
-                        scoreboardID = "floating player";
-                        mySettings[0] = replacementSetting;
-                        break;
+            String scoreboardID;
+            switch (args[1]) {
+               case "below_name": {
+                  scoreboardID = "floating player";
+                  mySettings[0] = replacementSetting;
+                  break;
+               }
 
-                    case "player_list":
-                        scoreboardID = "tab list";
-                        mySettings[1] = replacementSetting;
-                        break;
+               case "player_list": {
+                  scoreboardID = "tab list";
+                  mySettings[1] = replacementSetting;
+                  break;
+               }
 
-                    case "sidebar":
-                        scoreboardID = "side panel";
-                        mySettings[2] = replacementSetting;
-                        break;
+               case "sidebar": {
+                  scoreboardID = "side panel";
+                  mySettings[2] = replacementSetting;
+                  break;
+               }
 
-                    default:
-                        if (isClear)
-                            sender.sendMessage(ERROR_MESSAGE_COLOR + "You must clear a valid display slot");
-                        else
-                            sender.sendMessage(ERROR_MESSAGE_COLOR + "You must replace a valid display slot");
-                        return;
-                }
-                if (isClear)
-                    sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Cleared " + scoreboardID + " scoreboard");
-                else
-                    sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Set " + scoreboardID + " scoreboard to server default");
+               default: {
+                  if (isClear) sender.sendMessage(ERROR_MESSAGE_COLOR + "You must clear a valid display slot");
+                  else sender.sendMessage(ERROR_MESSAGE_COLOR + "You must replace a valid display slot");
+                  return;
+               }
             }
-            break;
+            if (isClear) sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Cleared " + scoreboardID + " scoreboard");
+            else sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Set " + scoreboardID + " scoreboard to server default");
+         }
+         break;
+      }
 
-        case "set":
-            switch (args.length) {
-                case 1:
-                    sender.sendMessage(ERROR_MESSAGE_COLOR + "The `scoreboard set' sub-command requires at least 1 additional argument");
-                    return;
-
-                case 2:
-                    for (int i = 0; i < 3; i++)
-                        mySettings[i] = args[1];
-                    sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Set all scoreboards to `" + args[1] + "' objective");
-                    break;
-
-                default:
-                    if (args.length > 3)
-                        sender.sendMessage(WARNING_MESSAGE_COLOR + "The `scoreboard set' sub-command takes at most 2 additional argument");
-
-                    String scoreboardID;
-                    switch (args[2]) {
-                        case "below_name":
-                            scoreboardID = "floating player";
-                            mySettings[0] = args[1];
-                            break;
-
-                        case "player_list":
-                            scoreboardID = "tab list";
-                            mySettings[1] = args[1];
-                            break;
-
-                        case "sidebar":
-                            scoreboardID = "side panel";
-                            mySettings[2] = args[1];
-                            break;
-
-                        default:
-                            sender.sendMessage(ERROR_MESSAGE_COLOR + "You must set a valid display slot");
-                            return;
-                    }
-                    sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Set " + scoreboardID + " scoreboard to `" + args[1] + "' objective");
-                    break;
+      case "set": {
+         switch (args.length) {
+            case 1: {
+               sender.sendMessage(ERROR_MESSAGE_COLOR + "The `scoreboard set' sub-command requires at least 1 additional argument");
+               return;
             }
-            break;
 
-        default:
-            sender.sendMessage(ERROR_MESSAGE_COLOR + "`" + args[0] + "' is not a valid operation for the `scoreboard' sub-command");
-            return;
-    }
+            case 2: {
+               for (int i = 0; i < 3; i++) mySettings[i] = args[1];
+               sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Set all scoreboards to `" + args[1] + "' objective");
+               break;
+            }
 
-    util::updatePlayerScoreboard((Player) sender);
+            default: {
+               if (args.length > 3) sender.sendMessage(WARNING_MESSAGE_COLOR + "The `scoreboard set' sub-command takes at most 2 additional argument");
+
+               String scoreboardID;
+               switch (args[2]) {
+                  case "below_name": {
+                     scoreboardID = "floating player";
+                     mySettings[0] = args[1];
+                     break;
+                  }
+
+                  case "player_list": {
+                     scoreboardID = "tab list";
+                     mySettings[1] = args[1];
+                     break;
+                  }
+
+                  case "sidebar": {
+                     scoreboardID = "side panel";
+                     mySettings[2] = args[1];
+                     break;
+                  }
+
+                  default: {
+                     sender.sendMessage(ERROR_MESSAGE_COLOR + "You must set a valid display slot");
+                     return;
+                  }
+               }
+               sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Set " + scoreboardID + " scoreboard to `" + args[1] + "' objective");
+               break;
+            }
+         }
+         break;
+      }
+
+      default: {
+         sender.sendMessage(ERROR_MESSAGE_COLOR + "`" + args[0] + "' is not a valid operation for the `scoreboard' sub-command");
+         return;
+      }
+   }
+
+   util::updatePlayerScoreboard((Player) sender);
 }
 
-/**
- * Gives tab-completion for the 'scoreboard' sub-command
- */
+/*
+Gives tab-completion for the 'scoreboard' sub-command
+*/
 $comp scoreboard : {
-    List list = new LinkedList();
-    if (!(sender instanceof Player))
-        return list;
+   List list = new LinkedList();
+   if (!(sender instanceof Player)) return list;
 
-    switch (args.length) {
-        case 1:
-            list.add("load");
-            list.add("clear");
-            list.add("set");
-            list.add("default");
-            break;
+   switch (args.length) {
+      case 1: {
+         list.add("load");
+         list.add("clear");
+         list.add("set");
+         list.add("default");
+         break;
+      }
 
-        case 2:
-            switch (args[0]) {
-                case "load":
-                    list.addAll(util::settings.keySet());
-                    break;
-
-                case "clear":
-                case "default":
-                    list.add("below_name");
-                    list.add("player_list");
-                    list.add("sidebar");
-                    break;
-
-                case "set":
-                    for (Objective obj: getAllObjectives())
-                        list.add(obj.getName());
-                    break;
-
-                default:
-                    break;
+      case 2: {
+         switch (args[0]) {
+            case "load": {
+               list.addAll(util::settings.keySet());
+               break;
             }
-            break;
 
-        case 3:
-            if (args[0].equals("set")) {
-                list.add("below_name");
-                list.add("player_list");
-                list.add("sidebar");
+            case "clear":
+            case "default": {
+               list.add("below_name");
+               list.add("player_list");
+               list.add("sidebar");
+               break;
             }
-            break;
 
-        default:
-            break;
-    }
-    return list;
+            case "set": {
+               for (Objective obj: getAllObjectives()) list.add(obj.getName());
+               break;
+            }
+
+            default: {
+               break;
+            }
+         }
+         break;
+      }
+
+      case 3: {
+         if (args[0].equals("set")) {
+            list.add("below_name");
+            list.add("player_list");
+            list.add("sidebar");
+         }
+         break;
+      }
+
+      default: {
+         break;
+      }
+   }
+   return list;
 }
 
-/**
- * Returns a set of all valid objectives from the main scoreboard
- *
- * @return A set of all valid objectives from the main scoreboard
- */
+/*
+Returns a set of all valid objectives from the main scoreboard
+
+@return A set of all valid objectives from the main scoreboard
+*/
 Set getAllObjectives() {
-    ScoreboardManager manager = Objects.requireNonNull(Bukkit.getScoreboardManager());
-    return manager.getMainScoreboard().getObjectives();
+   ScoreboardManager manager = Objects.requireNonNull(Bukkit.getScoreboardManager());
+   return manager.getMainScoreboard().getObjectives();
 }
+
+BukkitTask updaterTask;
 
 @Init : {
-    try {
-        BufferedReader br = new BufferedReader(new FileReader($getRelative($FILE + "/config.txt")));
-        String line;
-        while ((line = br.readLine()) != null)
-            try {
-                StringTokenizer st = new StringTokenizer(line);
-                util::settings.put(st.nextToken(), new String[]{st.nextToken(), st.nextToken(), st.nextToken()});
-            } catch (Exception ignored) {
-            }
-    } catch (FileNotFoundException ignored) {
-    }
+   try {
+      BufferedReader br = new BufferedReader(new FileReader($getRelative($FILE + "/config.txt")));
+      String line;
+      while ((line = br.readLine()) != null) {
+         try {
+            StringTokenizer st = new StringTokenizer(line);
+            String[] mySettings = util::getOrCreateConfig(st.nextToken());
+            for (int i = 0; i < mySettings.length; i++) mySettings[i] = st.nextToken();
+         } catch (Exception ignored) {
+         }
+      }
+   } catch (FileNotFoundException ignored) {
+   }
 
-    long ticksBetweenUpdates = Math.max(1L, (long) (SCOREBOARD_UPDATE_IN_SECONDS * 20L + 0.5));
-    Bukkit.getScheduler().runTaskTimer($PLUGIN, new util::ObjectiveUpdater(), 1L, ticksBetweenUpdates);
+   long ticksBetweenUpdates = Math.max(1L, (long) (SCOREBOARD_UPDATE_IN_SECONDS * 20L + 0.5));
+   updaterTask = Bukkit.getScheduler().runTaskTimer($PLUGIN, new util::ObjectiveUpdater(), 1L, ticksBetweenUpdates);
 }
 
 @Exit : {
-    try {
-        PrintWriter pw = new PrintWriter(new FileWriter($getRelative($FILE + "/config.txt")));
-        for ($MapEntry e : util::settings.entrySet()) {
-            pw.print(e.getKey());
-            String[] config = (String[]) e.getValue();
-            for (int i = 0; i < config.length; i++) {
-                pw.print(" ");
-                if (config[i] != null)
-                    pw.print(config[i]);
-            }
-            pw.println();
-        }
-        pw.close();
-    } catch (FileNotFoundException ignored) {
-    }
+   try {
+      PrintWriter pw = new PrintWriter(new FileWriter($getRelative($FILE + "/config.txt")));
+      for ($MapEntry e : util::settings.entrySet()) {
+         pw.print(e.getKey());
+         String[] config = (String[]) e.getValue();
+         for (int i = 0; i < config.length; i++) {
+            pw.print(" ");
+            if (config[i] != null) pw.print(config[i]);
+         }
+         pw.println();
+      }
+      pw.close();
+   } catch (FileNotFoundException ignored) {
+   }
+
+   updaterTask.cancel();
+   updaterTask = null;
 }
 
 @PlayerJoin : {
-    Player player = ((PlayerJoinEvent) wrapper.getEvent()).getPlayer();
-    if (!util::settings.containsKey(player.getName())) {
-        util::settings.put(player.getName(), new String[3]);
-        player.sendMessage(WARNING_MESSAGE_COLOR + "Your previous scoreboard configurations were not saved");
-        player.sendMessage(WARNING_MESSAGE_COLOR + "Loading server-default scoreboards...");
-    }
-    util::updatePlayerScoreboard(player);
+   Player player = ((PlayerJoinEvent) wrapper.getEvent()).getPlayer();
+   if (!util::settings.containsKey(player.getName())) {
+      player.sendMessage(WARNING_MESSAGE_COLOR + "Unable to find your scoreboard configurations");
+      player.sendMessage(WARNING_MESSAGE_COLOR + "Loading server-default scoreboards...");
+   }
+   util::updatePlayerScoreboard(player);
 }
 
 // --------------------------------------------------------------------------------- //

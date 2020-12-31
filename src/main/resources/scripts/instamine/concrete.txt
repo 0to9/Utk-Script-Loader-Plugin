@@ -1,21 +1,20 @@
 /*
- * This is the script file for the "concrete" module of the instamine script.
- * This script adds instamine support to the concrete blocks, such as white
- * concrete, blue concrete, red concrete, and black concrete.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 18, 2020
- */
+This is the script file for the "concrete" module of the instamine script.
+This script adds instamine support to the concrete blocks, such as white
+concrete, blue concrete, red concrete, and black concrete.
 
-/*
- * DO NOT MODIFY ANY CODE BEYOND THIS POINT
- * (see warning in the file header comment)
- */
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 18, 2020
+*/
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
 import java.util;
 
@@ -25,28 +24,32 @@ int minHaste = 2, minEfficiency = 5;
 Set validTypes = new HashSet(), validTools = new HashSet();
 
 @Init : {
-    // All valid blocks --> Allow only concrete blocks for this module
-    validTypes.add(Material.CYAN_CONCRETE);
-    validTypes.add(Material.BLACK_CONCRETE);
-    validTypes.add(Material.BLUE_CONCRETE);
-    validTypes.add(Material.BROWN_CONCRETE);
-    validTypes.add(Material.GRAY_CONCRETE);
-    validTypes.add(Material.GREEN_CONCRETE);
-    validTypes.add(Material.LIGHT_BLUE_CONCRETE);
-    validTypes.add(Material.LIGHT_GRAY_CONCRETE);
-    validTypes.add(Material.LIME_CONCRETE);
-    validTypes.add(Material.MAGENTA_CONCRETE);
-    validTypes.add(Material.ORANGE_CONCRETE);
-    validTypes.add(Material.PINK_CONCRETE);
-    validTypes.add(Material.PURPLE_CONCRETE);
-    validTypes.add(Material.RED_CONCRETE);
-    validTypes.add(Material.WHITE_CONCRETE);
-    validTypes.add(Material.YELLOW_CONCRETE);
+   // All valid blocks --> Allow only concrete blocks for this module
+   validTypes.add(Material.CYAN_CONCRETE);
+   validTypes.add(Material.BLACK_CONCRETE);
+   validTypes.add(Material.BLUE_CONCRETE);
+   validTypes.add(Material.BROWN_CONCRETE);
+   validTypes.add(Material.GRAY_CONCRETE);
+   validTypes.add(Material.GREEN_CONCRETE);
+   validTypes.add(Material.LIGHT_BLUE_CONCRETE);
+   validTypes.add(Material.LIGHT_GRAY_CONCRETE);
+   validTypes.add(Material.LIME_CONCRETE);
+   validTypes.add(Material.MAGENTA_CONCRETE);
+   validTypes.add(Material.ORANGE_CONCRETE);
+   validTypes.add(Material.PINK_CONCRETE);
+   validTypes.add(Material.PURPLE_CONCRETE);
+   validTypes.add(Material.RED_CONCRETE);
+   validTypes.add(Material.WHITE_CONCRETE);
+   validTypes.add(Material.YELLOW_CONCRETE);
 
-    // All valid tools --> Only diamond and netherite pickaxes
-    validTools.add(Material.DIAMOND_PICKAXE);
-    validTools.add(Material.NETHERITE_PICKAXE);
+   // All valid tools --> Only diamond and netherite pickaxes
+   validTools.add(Material.DIAMOND_PICKAXE);
+   validTools.add(Material.NETHERITE_PICKAXE);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
 
 /*
 MIT License

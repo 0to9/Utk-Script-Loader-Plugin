@@ -1,0 +1,9 @@
+More Modules
+Entity Protection Services is now in
+EPS also received some minor back-end upgrades and a slightly modified command argument system
+
+Scripting Changes
+The scripts have received minor format revisions
+These are mainly targeted for aesthetics with the Atom document editor
+Scripts are hard to work with, but the C++ syntax highligher provided by Atom works wonders for increasing readability
+These internal reformats are to improve support for Atom's default auto-indent feature (with a tab-indent of 3 spaces as the standard)

@@ -1,21 +1,20 @@
 /*
- * This is the script file for the "glass" module of the instamine script.
- * This script adds instamine support to the glass blocks and panes, such as
- * glass, glass panes, white stained glass, and white stained glass panes.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 18, 2020
- */
+This is the script file for the "glass" module of the instamine script.
+This script adds instamine support to the glass blocks and panes, such as
+glass, glass panes, white stained glass, and white stained glass panes.
 
-/*
- * DO NOT MODIFY ANY CODE BEYOND THIS POINT
- * (see warning in the file header comment)
- */
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 18, 2020
+*/
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
 import java.util;
 
@@ -25,46 +24,50 @@ int minHaste = 2, minEfficiency = 5;
 Set validTypes = new HashSet(), validTools = new HashSet();
 
 @Init : {
-    // All valid blocks --> Allow only glass blocks and panes for this module
-    validTypes.add(Material.GLASS);
-    validTypes.add(Material.GLASS_PANE);
-    validTypes.add(Material.GRAY_STAINED_GLASS);
-    validTypes.add(Material.GRAY_STAINED_GLASS_PANE);
-    validTypes.add(Material.GREEN_STAINED_GLASS);
-    validTypes.add(Material.GREEN_STAINED_GLASS_PANE);
-    validTypes.add(Material.BLACK_STAINED_GLASS);
-    validTypes.add(Material.BLACK_STAINED_GLASS_PANE);
-    validTypes.add(Material.BLUE_STAINED_GLASS);
-    validTypes.add(Material.BLUE_STAINED_GLASS_PANE);
-    validTypes.add(Material.BROWN_STAINED_GLASS);
-    validTypes.add(Material.BROWN_STAINED_GLASS_PANE);
-    validTypes.add(Material.CYAN_STAINED_GLASS);
-    validTypes.add(Material.CYAN_STAINED_GLASS_PANE);
-    validTypes.add(Material.LIGHT_BLUE_STAINED_GLASS);
-    validTypes.add(Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-    validTypes.add(Material.LIGHT_GRAY_STAINED_GLASS);
-    validTypes.add(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-    validTypes.add(Material.LIME_STAINED_GLASS);
-    validTypes.add(Material.LIME_STAINED_GLASS_PANE);
-    validTypes.add(Material.MAGENTA_STAINED_GLASS);
-    validTypes.add(Material.MAGENTA_STAINED_GLASS_PANE);
-    validTypes.add(Material.ORANGE_STAINED_GLASS);
-    validTypes.add(Material.ORANGE_STAINED_GLASS_PANE);
-    validTypes.add(Material.PINK_STAINED_GLASS);
-    validTypes.add(Material.PINK_STAINED_GLASS_PANE);
-    validTypes.add(Material.PURPLE_STAINED_GLASS);
-    validTypes.add(Material.PURPLE_STAINED_GLASS_PANE);
-    validTypes.add(Material.RED_STAINED_GLASS);
-    validTypes.add(Material.RED_STAINED_GLASS_PANE);
-    validTypes.add(Material.WHITE_STAINED_GLASS);
-    validTypes.add(Material.WHITE_STAINED_GLASS_PANE);
-    validTypes.add(Material.YELLOW_STAINED_GLASS);
-    validTypes.add(Material.YELLOW_STAINED_GLASS_PANE);
+   // All valid blocks --> Allow only glass blocks and panes for this module
+   validTypes.add(Material.GLASS);
+   validTypes.add(Material.GLASS_PANE);
+   validTypes.add(Material.GRAY_STAINED_GLASS);
+   validTypes.add(Material.GRAY_STAINED_GLASS_PANE);
+   validTypes.add(Material.GREEN_STAINED_GLASS);
+   validTypes.add(Material.GREEN_STAINED_GLASS_PANE);
+   validTypes.add(Material.BLACK_STAINED_GLASS);
+   validTypes.add(Material.BLACK_STAINED_GLASS_PANE);
+   validTypes.add(Material.BLUE_STAINED_GLASS);
+   validTypes.add(Material.BLUE_STAINED_GLASS_PANE);
+   validTypes.add(Material.BROWN_STAINED_GLASS);
+   validTypes.add(Material.BROWN_STAINED_GLASS_PANE);
+   validTypes.add(Material.CYAN_STAINED_GLASS);
+   validTypes.add(Material.CYAN_STAINED_GLASS_PANE);
+   validTypes.add(Material.LIGHT_BLUE_STAINED_GLASS);
+   validTypes.add(Material.LIGHT_BLUE_STAINED_GLASS_PANE);
+   validTypes.add(Material.LIGHT_GRAY_STAINED_GLASS);
+   validTypes.add(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+   validTypes.add(Material.LIME_STAINED_GLASS);
+   validTypes.add(Material.LIME_STAINED_GLASS_PANE);
+   validTypes.add(Material.MAGENTA_STAINED_GLASS);
+   validTypes.add(Material.MAGENTA_STAINED_GLASS_PANE);
+   validTypes.add(Material.ORANGE_STAINED_GLASS);
+   validTypes.add(Material.ORANGE_STAINED_GLASS_PANE);
+   validTypes.add(Material.PINK_STAINED_GLASS);
+   validTypes.add(Material.PINK_STAINED_GLASS_PANE);
+   validTypes.add(Material.PURPLE_STAINED_GLASS);
+   validTypes.add(Material.PURPLE_STAINED_GLASS_PANE);
+   validTypes.add(Material.RED_STAINED_GLASS);
+   validTypes.add(Material.RED_STAINED_GLASS_PANE);
+   validTypes.add(Material.WHITE_STAINED_GLASS);
+   validTypes.add(Material.WHITE_STAINED_GLASS_PANE);
+   validTypes.add(Material.YELLOW_STAINED_GLASS);
+   validTypes.add(Material.YELLOW_STAINED_GLASS_PANE);
 
-    // All valid tools --> Only diamond and netherite pickaxes
-    validTools.add(Material.DIAMOND_PICKAXE);
-    validTools.add(Material.NETHERITE_PICKAXE);
+   // All valid tools --> Only diamond and netherite pickaxes
+   validTools.add(Material.DIAMOND_PICKAXE);
+   validTools.add(Material.NETHERITE_PICKAXE);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
 
 /*
 MIT License

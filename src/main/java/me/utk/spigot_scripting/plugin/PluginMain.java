@@ -22,7 +22,7 @@ import static me.utk.spigot_scripting.plugin.command.PluginTabCompleter.Changelo
 
 public class PluginMain extends JavaPlugin {
     public static final String PLUGIN_NAME = "Utk Script Loader Plugin";
-    public static final String VERSION = "pre3.0.0-1.16.4";
+    public static final String VERSION = "pre3.0.0-1.16.4-rev4";
 
     public static final String PATH = FileUtil.PROJECT_CLASS_PATH + "plugin.PluginMain";
 
@@ -31,15 +31,37 @@ public class PluginMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Save config if missing
-        saveDefaultConfig();
-        ErrorLogger.printStackTrace = getConfig().getBoolean("Print Debug Output", false);
-
         // Set instance variable
         INSTANCE = this;
 
+        // Call extracted helper method
+        doOnEnableAlways(false);
+
+        // Load changelog
+        loadChangelog();
+
+        // Enable plugin command handlers
+        {
+            PluginCommand pluginCommand = Objects.requireNonNull(getCommand("usl"));
+            pluginCommand.setExecutor(new PluginCommandExecutor());
+            pluginCommand.setTabCompleter(new PluginTabCompleter());
+        }
+    }
+
+    private void doOnEnableAlways(boolean forceScriptReload) {
+        // Save config if missing
+        saveDefaultConfig();
+
+        // Reload config to newest values
+        reloadConfig();
+
+        // Get error-logging config
+        ErrorLogger.printStackTrace = getConfig().getBoolean("Print Debug Output", false);
+
         // Generate all_players set
         {
+            // TODO add players to ALL_PLAYERS when they join the game
+            // ^^ deals with new players joining the server
             final long NOW = new Date().getTime(), MAX_TIME_OFF = 14 * 24L * 3600L * 1000L; // MAX_TIME_OFF = 14 days
             for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                 if (player.isBanned()) continue;                           // Skip banned players
@@ -48,27 +70,24 @@ public class PluginMain extends JavaPlugin {
             }
         }
 
-        // Enable plugin command handlers
-        {
-            PluginCommand pluginCommand = Objects.requireNonNull(getCommand("usl"));
-            pluginCommand.setExecutor(new PluginCommandExecutor());
-            pluginCommand.setTabCompleter(new PluginTabCompleter());
-        }
-
         // Copy scripts if not present
         {
             String reloadConfigPath = "Reload Scripts";
-            if (getConfig().getBoolean(reloadConfigPath, true)) {
+            if (forceScriptReload || getConfig().getBoolean(reloadConfigPath, true)) {
                 reloadScripts();
                 getConfig().set(reloadConfigPath, false);
+
+                // Save config to file
+                try {
+                    getConfig().save(new File(getDataFolder(), "config.yml"));
+                } catch (IOException e) {
+                    ErrorLogger.logError(() -> "Error while saving config file", e);
+                }
             }
         }
 
-        // Load changelog
-        loadChangelog();
-
         // Process scripts
-        Main.createScripts(getDataFolder() + "/scripts/main.txt");
+        Main.processScripts(getDataFolder() + "/scripts/main.txt");
 
         // Send script initialization event
         ScriptInitializationWrapper.handleEvent();
@@ -76,25 +95,30 @@ public class PluginMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Call extracted helper method
+        doOnDisableAlways();
+
+        // Clear instance variable
+        INSTANCE = null;
+    }
+
+    private void doOnDisableAlways() {
         // Send script termination event
         ScriptTerminationWrapper.handleEvent();
 
         // Destroy scripts
-        Main.destroyScripts();
+        Main.clearScriptResidues();
 
         // Clear all_players set
         ALL_PLAYERS.clear();
+    }
 
-        // Clear instance variable
-        INSTANCE = null;
+    public void reloadPlugin() {
+        // Disable plugin
+        doOnDisableAlways();
 
-        // Save config if missing
-        saveDefaultConfig();
-        try {
-            getConfig().save(new File(getDataFolder(), "config.yml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Enable plugin
+        doOnEnableAlways(true); // true = force reload scripts
     }
 
     private void loadChangelog() {
@@ -132,7 +156,7 @@ public class PluginMain extends JavaPlugin {
                 }
 
         } catch (Exception e) {
-            ErrorLogger.logError(() -> "Error while loading changelogs", e);
+            ErrorLogger.logError(() -> "Error while reading changelog files", e);
         }
     }
 
@@ -173,7 +197,6 @@ public class PluginMain extends JavaPlugin {
             try {
                 String file = filesToAdd.poll(), parent = FileUtil.getParentDirectory(file);
                 done.add(file);
-                System.out.println(file);
 
                 File outputFile = new File(getDataFolder(), file), outputParent = outputFile.getParentFile();
                 if (!outputParent.exists())
@@ -195,7 +218,12 @@ public class PluginMain extends JavaPlugin {
                 }
                 pw.close();
             } catch (Exception e) {
-                ErrorLogger.logError(() -> "Error while copying scripts", e);
+                ErrorLogger.logError(() -> "Error while reloading default scripts", e);
             }
+
+        StringBuilder logBuilder = new StringBuilder("Default Script Loading Manifest (for console/logs):");
+        for (String orderedFile : new TreeSet<>(done))
+            logBuilder.append("\n").append(" - ").append(orderedFile);
+        System.out.println(logBuilder);
     }
 }

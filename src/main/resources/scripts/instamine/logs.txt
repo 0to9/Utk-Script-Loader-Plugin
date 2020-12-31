@@ -1,21 +1,20 @@
 /*
- * This is the script file for the "logs" module of the instamine script.
- * This script adds instamine support to the log and wood blocks, such as
- * oak logs, acacia wood, and stripped warped hyphae.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 18, 2020
- */
+This is the script file for the "logs" module of the instamine script.
+This script adds instamine support to the log and wood blocks, such as
+oak logs, acacia wood, and stripped warped hyphae.
 
-/*
- * DO NOT MODIFY ANY CODE BEYOND THIS POINT
- * (see warning in the file header comment)
- */
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 18, 2020
+*/
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
 import java.util;
 
@@ -25,47 +24,51 @@ int minHaste = 2, minEfficiency = 5;
 Set validTypes = new HashSet(), validTools = new HashSet();
 
 @Init : {
-    // All valid blocks --> Allow only logs, woods, and stripped variants for this module
-    validTypes.add(Material.ACACIA_LOG);
-    validTypes.add(Material.BIRCH_LOG);
-    validTypes.add(Material.DARK_OAK_LOG);
-    validTypes.add(Material.JUNGLE_LOG);
-    validTypes.add(Material.OAK_LOG);
-    validTypes.add(Material.SPRUCE_LOG);
-    validTypes.add(Material.CRIMSON_STEM);
-    validTypes.add(Material.WARPED_STEM);
+   // All valid blocks --> Allow only logs, woods, and stripped variants for this module
+   validTypes.add(Material.ACACIA_LOG);
+   validTypes.add(Material.BIRCH_LOG);
+   validTypes.add(Material.DARK_OAK_LOG);
+   validTypes.add(Material.JUNGLE_LOG);
+   validTypes.add(Material.OAK_LOG);
+   validTypes.add(Material.SPRUCE_LOG);
+   validTypes.add(Material.CRIMSON_STEM);
+   validTypes.add(Material.WARPED_STEM);
 
-    validTypes.add(Material.STRIPPED_ACACIA_LOG);
-    validTypes.add(Material.STRIPPED_BIRCH_LOG);
-    validTypes.add(Material.STRIPPED_DARK_OAK_LOG);
-    validTypes.add(Material.STRIPPED_JUNGLE_LOG);
-    validTypes.add(Material.STRIPPED_OAK_LOG);
-    validTypes.add(Material.STRIPPED_SPRUCE_LOG);
-    validTypes.add(Material.STRIPPED_CRIMSON_STEM);
-    validTypes.add(Material.STRIPPED_WARPED_STEM);
+   validTypes.add(Material.STRIPPED_ACACIA_LOG);
+   validTypes.add(Material.STRIPPED_BIRCH_LOG);
+   validTypes.add(Material.STRIPPED_DARK_OAK_LOG);
+   validTypes.add(Material.STRIPPED_JUNGLE_LOG);
+   validTypes.add(Material.STRIPPED_OAK_LOG);
+   validTypes.add(Material.STRIPPED_SPRUCE_LOG);
+   validTypes.add(Material.STRIPPED_CRIMSON_STEM);
+   validTypes.add(Material.STRIPPED_WARPED_STEM);
 
-    validTypes.add(Material.ACACIA_WOOD);
-    validTypes.add(Material.BIRCH_WOOD);
-    validTypes.add(Material.DARK_OAK_WOOD);
-    validTypes.add(Material.JUNGLE_WOOD);
-    validTypes.add(Material.OAK_WOOD);
-    validTypes.add(Material.SPRUCE_WOOD);
-    validTypes.add(Material.CRIMSON_HYPHAE);
-    validTypes.add(Material.WARPED_HYPHAE);
+   validTypes.add(Material.ACACIA_WOOD);
+   validTypes.add(Material.BIRCH_WOOD);
+   validTypes.add(Material.DARK_OAK_WOOD);
+   validTypes.add(Material.JUNGLE_WOOD);
+   validTypes.add(Material.OAK_WOOD);
+   validTypes.add(Material.SPRUCE_WOOD);
+   validTypes.add(Material.CRIMSON_HYPHAE);
+   validTypes.add(Material.WARPED_HYPHAE);
 
-    validTypes.add(Material.STRIPPED_ACACIA_WOOD);
-    validTypes.add(Material.STRIPPED_BIRCH_WOOD);
-    validTypes.add(Material.STRIPPED_DARK_OAK_WOOD);
-    validTypes.add(Material.STRIPPED_JUNGLE_WOOD);
-    validTypes.add(Material.STRIPPED_OAK_WOOD);
-    validTypes.add(Material.STRIPPED_SPRUCE_WOOD);
-    validTypes.add(Material.STRIPPED_CRIMSON_HYPHAE);
-    validTypes.add(Material.STRIPPED_WARPED_HYPHAE);
+   validTypes.add(Material.STRIPPED_ACACIA_WOOD);
+   validTypes.add(Material.STRIPPED_BIRCH_WOOD);
+   validTypes.add(Material.STRIPPED_DARK_OAK_WOOD);
+   validTypes.add(Material.STRIPPED_JUNGLE_WOOD);
+   validTypes.add(Material.STRIPPED_OAK_WOOD);
+   validTypes.add(Material.STRIPPED_SPRUCE_WOOD);
+   validTypes.add(Material.STRIPPED_CRIMSON_HYPHAE);
+   validTypes.add(Material.STRIPPED_WARPED_HYPHAE);
 
-    // All valid tools --> Only diamond and netherite pickaxes
-    validTools.add(Material.DIAMOND_AXE);
-    validTools.add(Material.NETHERITE_AXE);
+   // All valid tools --> Only diamond and netherite pickaxes
+   validTools.add(Material.DIAMOND_AXE);
+   validTools.add(Material.NETHERITE_AXE);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
 
 /*
 MIT License

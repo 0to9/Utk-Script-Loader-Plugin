@@ -25,21 +25,24 @@ public abstract class EventWrapper<E> {
     private final Map<Method, Integer> HANDLERS = new HashMap<>();
     protected void handleEvent0(E event) {
         EventWrapper<E> wrapped = getInstance(event);
-        if (isInitialized) {
-            Iterator<Map.Entry<Method, Integer>> it = HANDLERS.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Method, Integer> entry = it.next();
-                try {
-                    entry.getKey().invoke(null, wrapped);
-                } catch (Exception e) {
-                    int fails = entry.getValue() + 1;
-                    entry.setValue(fails);
-                    if (fails >= 10)
-                        it.remove();
-                    ErrorLogger.logError(() -> getClass() + " handler failed: #" + fails, e);
+        if (isInitialized)
+            // try to prevent ConcurrentModificationException if reload happens
+            try {
+                Iterator<Map.Entry<Method, Integer>> it = HANDLERS.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<Method, Integer> entry = it.next();
+                    try {
+                        entry.getKey().invoke(null, wrapped);
+                    } catch (Exception e) {
+                        int fails = entry.getValue() + 1;
+                        entry.setValue(fails);
+                        if (fails >= 10)
+                            it.remove();
+                        ErrorLogger.logError(() -> getClass() + " handler failed: #" + fails, e);
+                    }
                 }
+            } catch (ConcurrentModificationException ignored) {
             }
-        }
     }
 
     protected final Collection<ReflectiveInitializer<Method>> INITIALIZERS = new LinkedList<>();

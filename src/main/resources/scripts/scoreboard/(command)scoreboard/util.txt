@@ -1,15 +1,15 @@
 /*
- * This is the a utility script file for the 'scoreboard' sub-command.
- * It contains the majority of the implementation logic for the command.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 28, 2020
- */
+This is the a utility script file for the 'scoreboard' sub-command.
+It contains the majority of the implementation logic for the command.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 30, 2020
+*/
 
 // --------------------------------------------------------------------------------- //
 // DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
@@ -29,74 +29,68 @@ import org.bukkit.scoreboard;
 import java.util;
 
 void updatePlayerScoreboard(Player player) {
-    ScoreboardManager manager = Objects.requireNonNull(Bukkit.getScoreboardManager());
-    Scoreboard currentBoard = player.getScoreboard();
-    Scoreboard mainBoard = manager.getMainScoreboard();
-    if (currentBoard == mainBoard) {
-        currentBoard = manager.getNewScoreboard();
-        player.setScoreboard(currentBoard);
-    }
+   ScoreboardManager manager = Objects.requireNonNull(Bukkit.getScoreboardManager());
+   Scoreboard currentBoard = player.getScoreboard();
+   Scoreboard mainBoard = manager.getMainScoreboard();
+   if (currentBoard == mainBoard) {
+      currentBoard = manager.getNewScoreboard();
+      player.setScoreboard(currentBoard);
+   }
 
-    String[] config = getOrCreateConfig(player.getName());
-    for (int i = 0; i < 3; i++) {
-        Objective mainObjective = null;
+   String[] config = getOrCreateConfig(player.getName());
+   for (int i = 0; i < 3; i++) {
+      Objective mainObjective = null;
 
-        String conf = config[i];
-        if ("".equals(conf))
+      String conf = config[i];
+      if ("".equals(conf)) config[i] = null;
+      else if (conf != null) {
+         Objective oldObj = currentBoard.getObjective(displaySlots[i]);
+         if (oldObj != null) {
+            if (conf.equals(oldObj.getName())) continue; // skip slot if already set correctly
+
+            Objective mainObj = mainBoard.getObjective(oldObj.getName());
+            objectiveMap.removeMapping(mainObj, oldObj);
+            currentBoard.clearSlot(displaySlots[i]);
+         }
+         if (conf.equals(command::SLOT_DISABLE_CODE)) continue; // disable this scoreboard display slot
+
+         mainObjective = mainBoard.getObjective(conf);
+         if (mainObjective == null) {
+            player.sendMessage(command::WARNING_MESSAGE_COLOR + "Unable to find objective: " + conf);
+            player.sendMessage(command::WARNING_MESSAGE_COLOR + "Loading in default server scoreboard");
             config[i] = null;
-        else if (conf != null) {
-            Objective oldObj = currentBoard.getObjective(displaySlots[i]);
-            if (oldObj != null) {
-                if (conf.equals(oldObj.getName()))
-                    continue; // skip slot if already set correctly
+         }
+      }
 
-                Objective mainObj = mainBoard.getObjective(oldObj.getName());
-                objectiveMap.removeMapping(mainObj, oldObj);
-                currentBoard.clearSlot(displaySlots[i]);
-            }
-            if (conf.equals(command::SLOT_DISABLE_CODE))
-                continue; // disable this scoreboard display slot
+      if (mainObjective == null) mainObjective = mainBoard.getObjective(displaySlots[i]);
 
-            mainObjective = mainBoard.getObjective(conf);
-            if (mainObjective == null) {
-                player.sendMessage(command::WARNING_MESSAGE_COLOR + "Unable to find objective: " + conf);
-                player.sendMessage(command::WARNING_MESSAGE_COLOR + "Loading in default server scoreboard");
-                config[i] = null;
-            }
-        }
+      if (mainObjective != null) {
+         String objectiveName = mainObjective.getName();
 
-        if (mainObjective == null)
-            mainObjective = mainBoard.getObjective(displaySlots[i]);
+         Objective newObjective = currentBoard.getObjective(objectiveName);
+         if (newObjective == null) {
+            String criteria = mainObjective.getCriteria(), displayName = mainObjective.getDisplayName();
+            newObjective = currentBoard.registerNewObjective(objectiveName, criteria, displayName);
+         }
 
-        if (mainObjective != null) {
-            String objectiveName = mainObjective.getName();
-
-            Objective newObjective = currentBoard.getObjective(objectiveName);
-            if (newObjective == null) {
-                String criteria = mainObjective.getCriteria(), displayName = mainObjective.getDisplayName();
-                newObjective = currentBoard.registerNewObjective(objectiveName, criteria, displayName);
-            }
-
-            restockScores(mainObjective, newObjective);
-            objectiveMap.put(mainObjective, newObjective);
-            newObjective.setDisplaySlot(displaySlots[i]);
-        }
-    }
+         restockScores(mainObjective, newObjective);
+         objectiveMap.put(mainObjective, newObjective);
+         newObjective.setDisplaySlot(displaySlots[i]);
+      }
+   }
 }
 
 void restockScores(Objective oldObjective, Objective newObjective) {
-    for (OfflinePlayer player : $ALL_PLAYERS) {
-        String name = player.getName();
-        if (name != null)
-            newObjective.getScore(name).setScore(oldObjective.getScore(name).getScore());
-    }
+   for (OfflinePlayer player : $ALL_PLAYERS) {
+      String name = player.getName();
+      if (name != null) newObjective.getScore(name).setScore(oldObjective.getScore(name).getScore());
+   }
 }
 
 String[] getOrCreateConfig(String playerName) {
-    String[] config = (String[]) settings.get(playerName);
-    if (config == null)
-        settings.put(playerName, config = new String[3]);
-    return config;
+   String[] config = (String[]) settings.get(playerName);
+   if (config == null) settings.put(playerName, config = new String[3]);
+   return config;
 }
 
 MultiValuedMap objectiveMap = new HashSetValuedHashMap();
@@ -104,10 +98,9 @@ Map settings = new HashMap();
 DisplaySlot[] displaySlots = {DisplaySlot.BELOW_NAME, DisplaySlot.PLAYER_LIST, DisplaySlot.SIDEBAR};
 
 callback ObjectiveUpdater {
-    void run() {
-        for ($MapEntry e : objectiveMap.entries())
-            restockScores((Objective) e.getKey(), (Objective) e.getValue());
-    }
+   void run() {
+      for ($MapEntry e : objectiveMap.entries()) restockScores((Objective) e.getKey(), (Objective) e.getValue());
+   }
 }
 
 // --------------------------------------------------------------------------------- //

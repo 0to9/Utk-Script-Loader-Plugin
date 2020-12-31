@@ -1,25 +1,26 @@
 /*
- * This is the main loader script file for the Utk Script Loading Plugin.
- * Here, you should specify what scripts you want the plugin to load.
- * Do so by commenting and uncommenting the given default script '#include'
- * directives or adding scripts of your own.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 21, 2020
- */
+This is the main loader script file for the Utk Script Loading Plugin.
+Here, you should specify what scripts you want the plugin to load.
+Do so by commenting and uncommenting the given default script '#include'
+directives or adding scripts of your own.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 21, 2020
+*/
 
 // --------------------------------------------------------------------------------- //
 // This is the script configuration section (see warning in the file header comment) //
 // --------------------------------------------------------------------------------- //
 
-#include instamine      "instamine.txt"
-#include easy_crafting  "easy_crafting.txt"
-#include scoreboard     "scoreboard.txt"
+#include instamine                  "instamine.txt"
+#include easy_crafting              "easy_crafting.txt"
+#include scoreboard                 "scoreboard.txt"
+#include entity_protection_services "entity_protection_services.txt"
 
 // --------------------------------------------------------------------------------- //
 //                                    END OF CODE                                    //

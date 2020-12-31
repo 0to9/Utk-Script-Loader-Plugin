@@ -1,21 +1,20 @@
 /*
- * This is the script file for the "wood products" module of the instamine script.
- * This script adds instamine support to the wood product blocks. This module is
- * current not implemented. TODO implement the wood products module of instamine
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 18, 2020
- */
+This is the script file for the "wood products" module of the instamine script.
+This script adds instamine support to the wood product blocks. This module is
+current not implemented. TODO implement the wood products module of instamine
 
-/*
- * DO NOT MODIFY ANY CODE BEYOND THIS POINT
- * (see warning in the file header comment)
- */
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 18, 2020
+*/
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
 import java.util;
 
@@ -25,13 +24,17 @@ int minHaste = 2, minEfficiency = 5;
 Set validTypes = new HashSet(), validTools = new HashSet();
 
 @Init : {
-    // All valid blocks --> Allow only wood products (stairs, slabs, etc.) for this module
-    // TODO add wood products
+   // All valid blocks --> Allow only wood products (stairs, slabs, etc.) for this module
+   // TODO add wood products
 
-    // All valid tools --> Only diamond and netherite pickaxes
-    validTools.add(Material.DIAMOND_AXE);
-    validTools.add(Material.NETHERITE_AXE);
+   // All valid tools --> Only diamond and netherite pickaxes
+   validTools.add(Material.DIAMOND_AXE);
+   validTools.add(Material.NETHERITE_AXE);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
 
 /*
 MIT License

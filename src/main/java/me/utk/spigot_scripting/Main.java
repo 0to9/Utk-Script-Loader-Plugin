@@ -8,6 +8,7 @@ import me.utk.spigot_scripting.loader_linker.CustomClassPool;
 import me.utk.spigot_scripting.loader_linker.ScriptLinker;
 import me.utk.spigot_scripting.loader_linker.ScriptLoader;
 import me.utk.spigot_scripting.script.ScriptParser;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,9 +17,9 @@ public class Main {
         String dump = null;
         List<String> scripts = new LinkedList<>();
         for (String arg : args) {
-            int eqInd = arg.indexOf("=");
-            String descr = arg.substring(0, eqInd + 1), filePath = arg.substring(eqInd + 1);
-            switch (descr) {
+            int splitInd = arg.indexOf("=") + 1;
+            String type = arg.substring(0, splitInd), filePath = arg.substring(splitInd);
+            switch (type) {
                 case "-dump=":
                     if (dump != null)
                         throw new IllegalArgumentException("Cannot have more than 1 dump file");
@@ -30,7 +31,7 @@ public class Main {
                     break;
 
                 default:
-                    throw new IllegalArgumentException("\"" + descr + "\" is not a valid argument descriptor");
+                    throw new IllegalArgumentException("\"" + type + "\" is not a valid argument descriptor");
             }
         }
 
@@ -40,10 +41,13 @@ public class Main {
     }
 
     private static void testScripts(String... filepath) {
-        createScripts(filepath);
+        processScripts(filepath, false);
     }
 
-    public static void createScripts(String... filePaths) {
+    public static void processScripts(String... filePaths) {
+        processScripts(filePaths, true);
+    }
+    private static void processScripts(String[] filePaths, boolean initializeClasses) {
         // Reload class pool to allow reloading classes
         CustomClassPool.reloadDefault();
 
@@ -52,16 +56,18 @@ public class Main {
             ScriptLoader.loadScript(filePath);
         ScriptLinker.linkScripts();
 
-        // Initialize classes
-        EventsUtil.initializeEventWrappers();
-        CommandUtil.initializeSubCommandHandler();
+        if (initializeClasses) {
+            // Initialize classes
+            EventsUtil.initializeEventWrappers();
+            CommandUtil.initializeSubCommandHandler();
+        }
 
         // Clear leftovers from script processing
         ScriptParser.resetScripts();
         ScriptLinker.CLASS_CLASS_MAP.clear();
     }
 
-    public static void destroyScripts() {
+    public static void clearScriptResidues() {
         // Terminate classes
         EventsUtil.terminateEventWrappers();
         CommandUtil.terminateSubCommandHandler();

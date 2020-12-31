@@ -1,21 +1,20 @@
 /*
- * This is the script file for the "blocks of" module of the instamine script.
- * This script adds instamine support to the "blocks of" blocks, such as the
- * coal block, the iron block, and the diamond block.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 18, 2020
- */
+This is the script file for the "blocks of" module of the instamine script.
+This script adds instamine support to the "blocks of" blocks, such as the
+coal block, the iron block, and the diamond block.
 
-/*
- * DO NOT MODIFY ANY CODE BEYOND THIS POINT
- * (see warning in the file header comment)
- */
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 18, 2020
+*/
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
 import java.util;
 
@@ -25,21 +24,25 @@ int minHaste = 2, minEfficiency = 5;
 Set validTypes = new HashSet(), validTools = new HashSet();
 
 @Init : {
-    // All valid blocks --> Allow only blocks of materials for this module
-    validTypes.add(Material.COAL_BLOCK);
-    validTypes.add(Material.IRON_BLOCK);
-    validTypes.add(Material.GOLD_BLOCK);
-    validTypes.add(Material.REDSTONE_BLOCK);
-    validTypes.add(Material.LAPIS_BLOCK);
-    validTypes.add(Material.EMERALD_BLOCK);
-    validTypes.add(Material.DIAMOND_BLOCK);
-    validTypes.add(Material.NETHERITE_BLOCK);
-    validTypes.add(Material.BONE_BLOCK);
+   // All valid blocks --> Allow only blocks of materials for this module
+   validTypes.add(Material.COAL_BLOCK);
+   validTypes.add(Material.IRON_BLOCK);
+   validTypes.add(Material.GOLD_BLOCK);
+   validTypes.add(Material.REDSTONE_BLOCK);
+   validTypes.add(Material.LAPIS_BLOCK);
+   validTypes.add(Material.EMERALD_BLOCK);
+   validTypes.add(Material.DIAMOND_BLOCK);
+   validTypes.add(Material.NETHERITE_BLOCK);
+   validTypes.add(Material.BONE_BLOCK);
 
-    // All valid tools --> Only diamond and netherite pickaxes
-    validTools.add(Material.DIAMOND_PICKAXE);
-    validTools.add(Material.NETHERITE_PICKAXE);
+   // All valid tools --> Only diamond and netherite pickaxes
+   validTools.add(Material.DIAMOND_PICKAXE);
+   validTools.add(Material.NETHERITE_PICKAXE);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
 
 /*
 MIT License

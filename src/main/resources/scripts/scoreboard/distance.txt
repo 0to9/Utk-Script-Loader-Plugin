@@ -1,57 +1,67 @@
 /*
- *
- */
+This is the script file for the distance objective module of the scoreboard script.
+This script adds the "Distance Traveled" objective, which tracks distance traveled
+in the forms specified in the storeCountedStatistics() method.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 30, 2020
+*/
 
 // --------------------------------------------------------------------------------- //
 // This is the script configuration section (see warning in the file header comment) //
 // --------------------------------------------------------------------------------- //
 
-/**
- * The distance scaling for points on the scoreboard
- *
- * If the value of this variable is 'x', then 1 point
- * on the scoreboard is equivalent to 'x' meters traveled.
- */
+/*
+The distance scaling for points on the scoreboard
+
+If the value of this variable is 'x', then 1 point
+on the scoreboard is equivalent to 'x' meters traveled.
+*/
 double DISTANCE_SCALE = 1.0; // in meters -> 1 scoreboard point = 'DISTANCE_SCALE' meters
 
-/**
- * The identifier and display name for this module's objective
- */
+/*
+The identifier and display name for this module's objective
+*/
 String OBJECTIVE_ID = "distance";
 String OBJECTIVE_DISPLAY_NAME = "Distance Traveled";
 
-/**
- * Add all the contained statistics into the counted statistics set
- *
- * To reconfigure, simply comment out individual lines
- * from inside this method's declaration.
- */
+/*
+Add all the contained statistics into the counted statistics set
+
+To reconfigure, simply comment out individual lines
+from inside this method's declaration.
+*/
 void storeCountedStatistics() {
-    // Flight Distance (jumps & elytra)
-    stats.add(Statistic.AVIATE_ONE_CM);
-    stats.add(Statistic.FLY_ONE_CM);
+   // Flight Distance (jumps & elytra)
+   stats.add(Statistic.AVIATE_ONE_CM);
+   stats.add(Statistic.FLY_ONE_CM);
 
-    // Vertical Distance
-    stats.add(Statistic.FALL_ONE_CM);
-    stats.add(Statistic.CLIMB_ONE_CM);
+   // Vertical Distance
+   stats.add(Statistic.FALL_ONE_CM);
+   stats.add(Statistic.CLIMB_ONE_CM);
 
-    // Vehicle Distance
-    stats.add(Statistic.BOAT_ONE_CM);
-    stats.add(Statistic.MINECART_ONE_CM);
+   // Vehicle Distance
+   stats.add(Statistic.BOAT_ONE_CM);
+   stats.add(Statistic.MINECART_ONE_CM);
 
-    // Animal Distance
-    stats.add(Statistic.HORSE_ONE_CM);
-    stats.add(Statistic.PIG_ONE_CM);
+   // Animal Distance
+   stats.add(Statistic.HORSE_ONE_CM);
+   stats.add(Statistic.PIG_ONE_CM);
 
-    // Land Distance
-    stats.add(Statistic.CROUCH_ONE_CM);
-    stats.add(Statistic.SPRINT_ONE_CM);
-    stats.add(Statistic.WALK_ONE_CM);
+   // Land Distance
+   stats.add(Statistic.CROUCH_ONE_CM);
+   stats.add(Statistic.SPRINT_ONE_CM);
+   stats.add(Statistic.WALK_ONE_CM);
 
-    // Water Distance
-    stats.add(Statistic.SWIM_ONE_CM);
-    stats.add(Statistic.WALK_ON_WATER_ONE_CM);
-    stats.add(Statistic.WALK_UNDER_WATER_ONE_CM);
+   // Water Distance
+   stats.add(Statistic.SWIM_ONE_CM);
+   stats.add(Statistic.WALK_ON_WATER_ONE_CM);
+   stats.add(Statistic.WALK_UNDER_WATER_ONE_CM);
 }
 
 // --------------------------------------------------------------------------------- //
@@ -64,92 +74,88 @@ import org.bukkit.scoreboard;
 
 import java.util;
 
-/**
- * The counted statistics set
- *
- * This set contains all the statistics (org.bukkit.Statistic)
- * that should be counted for this module's scoring function.
- *
- * These statistics can be configured in the storeCountedStatistics() method.
- */
+/*
+The counted statistics set
+
+This set contains all the statistics (org.bukkit.Statistic)
+that should be counted for this module's scoring function.
+
+These statistics can be configured in the storeCountedStatistics() method.
+*/
 Set stats = new HashSet(20);
 
-/**
- * Updates the specified player's score in the specified objective
- * by summing the total distance moved for the statistics present
- * in the counted statistics map
- *
- * @param player    The player whose score to get
- * @param objective The objective to update
- */
+/*
+Updates the specified player's score in the specified objective
+by summing the total distance moved for the statistics present
+in the counted statistics map
+
+@param player    The player whose score to get
+@param objective The objective to update
+*/
 void updatePlayerScore(OfflinePlayer player, Objective objective) {
-    String playerName = player.getName();
-    if (playerName == null)
-        return;
+   String playerName = player.getName();
+   if (playerName == null) return;
 
-    double score = 0.0;
-    for (Statistic stat : stats)
-        score += player.getStatistic(stat);
-    score = score / (100.0 * DISTANCE_SCALE) + 0.5;
+   double score = 0.0;
+   for (Statistic stat : stats) score += player.getStatistic(stat);
+   score = score / (100.0 * DISTANCE_SCALE) + 0.5;
 
-    objective.getScore(playerName).setScore((int) score);
+   objective.getScore(playerName).setScore((int) score);
 }
 
-/**
- * Returns this module's objective from the main board, creating the objective if necessary
- *
- * @return This module's objective from the main board
- */
+/*
+Returns this module's objective from the main board, creating the objective if necessary
+
+@return This module's objective from the main board
+*/
 Objective getMainBoardObjective() {
-    ScoreboardManager manager = Objects.requireNonNull(Bukkit.getScoreboardManager());
-    Scoreboard mainBoard = manager.getMainScoreboard();
+   ScoreboardManager manager = Objects.requireNonNull(Bukkit.getScoreboardManager());
+   Scoreboard mainBoard = manager.getMainScoreboard();
 
-    Objective obj = mainBoard.getObjective(OBJECTIVE_ID);
-    if (obj == null)
-        obj = mainBoard.registerNewObjective(OBJECTIVE_ID, "dummy", OBJECTIVE_DISPLAY_NAME);
-    return obj;
+   Objective obj = mainBoard.getObjective(OBJECTIVE_ID);
+   if (obj == null) obj = mainBoard.registerNewObjective(OBJECTIVE_ID, "dummy", OBJECTIVE_DISPLAY_NAME);
+   return obj;
 }
 
-/**
- * Called when the script should initialize
- *
- * Stores all statistics that should be included in the movement score
- * Schedules the AllPlayerScoreUpdater callback to run when the server starts
- */
+/*
+Called when the script should initialize
+
+Stores all statistics that should be included in the movement score
+Schedules the AllPlayerScoreUpdater callback to run when the server starts
+*/
 @Init : {
-    storeCountedStatistics();
-    Bukkit.getScheduler().runTaskLater($PLUGIN, new AllPlayerScoreUpdater(), 1L);
+   storeCountedStatistics();
+   Bukkit.getScheduler().runTaskLater($PLUGIN, new AllPlayerScoreUpdater(), 1L);
 }
 
-/**
- * Called when the script should exit
- *
- * Clears the stored statistics set
- */
+/*
+Called when the script should exit
+
+Clears the stored statistics set
+*/
 @Exit : {
-    stats.clear();
+   stats.clear();
 }
 
-/**
- * Called whenever a PlayerMoveEvent occurs
- *
- * Updates the score of the player in the main board's objective
- * (all other boards are handled by the scoreboard command module)
- */
+/*
+Called whenever a PlayerMoveEvent occurs
+
+Updates the score of the player in the main board's objective
+(all other boards are handled by the scoreboard command module)
+*/
 @PlayerMove : {
-    updatePlayerScore(((PlayerMoveEvent) wrapper.getEvent()).getPlayer(), getMainBoardObjective());
+   updatePlayerScore(((PlayerMoveEvent) wrapper.getEvent()).getPlayer(), getMainBoardObjective());
 }
 
-/**
- * A java.lang.Runnable implementation for updating all player
- * distance scores when the plugin is first initialized.
- */
+/*
+A java.lang.Runnable implementation for updating all player
+distance scores when the plugin is first initialized.
+*/
 callback AllPlayerScoreUpdater {
-    void run() {
-        Objective obj = getMainBoardObjective();
-        for (OfflinePlayer player : $ALL_PLAYERS)
-            updatePlayerScore(player, obj);
-    }
+   void run() {
+      Objective obj = getMainBoardObjective();
+      for (OfflinePlayer player : $ALL_PLAYERS) updatePlayerScore(player, obj);
+   }
 }
 
 // --------------------------------------------------------------------------------- //

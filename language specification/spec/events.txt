@@ -40,9 +40,10 @@
  * For documentation on these events, check out the Spigot API documentation:
  * https://hub.spigotmc.org/javadocs/bukkit/index.html
  */
-// PlayerInteract   ->  org.bukkit.event.player.PlayerInteractEvent
-// PlayerMove       ->  org.bukkit.event.player.PlayerMoveEvent
-// PlayerJoin       ->  org.bukkit.event.player.PlayerJoinEvent
+// PlayerInteract       ->  org.bukkit.event.player.PlayerInteractEvent
+// PlayerMove           ->  org.bukkit.event.player.PlayerMoveEvent
+// PlayerJoin           ->  org.bukkit.event.player.PlayerJoinEvent
+// EntityDamageByEntity ->  org.bukkit.event.entity.EntityDamageByEntityEvent
 
 /*
  * Custom Events

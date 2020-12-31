@@ -1,0 +1,6 @@
+Plugin Reloading
+The plugin can now functionally be reloaded by console and any op-ed players
+
+Script Reloading
+Script reloading now prints a manifest to console/logs for bookkeeping
+Also publicly broadcasts a message identifying the reload initiator

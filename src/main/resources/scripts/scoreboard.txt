@@ -1,19 +1,19 @@
 /*
- * This is the main script file for adding both the scoreboard sub-command
- * functionality as well as custom scoreboard objectives, all of which are
- * modularized into their own script files.
- *
- * To customize or configure which modules are active, simply comment or
- * uncomment individual '#include' statements corresponding to each module.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 28, 2020
- */
+This is the main script file for adding both the scoreboard sub-command
+functionality as well as custom scoreboard objectives, all of which are
+modularized into their own script files.
+
+To customize or configure which modules are active, simply comment or
+uncomment individual '#include' statements corresponding to each module.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 28, 2020
+*/
 
 // --------------------------------------------------------------------------------- //
 // This is the script configuration section (see warning in the file header comment) //

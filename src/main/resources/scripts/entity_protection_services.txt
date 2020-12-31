@@ -1,0 +1,125 @@
+/*
+This is the main script file for adding entity protection functionality.
+In other words, its modules prevent players from damaging specific entities
+with per-player configuration settings.
+
+The default modules protect 5 distinct classes of mobs: villagers, other
+passive mobs, piglin variants, neutral mobs, and golem variants.
+To customize or configure which modules are active, simply comment or
+uncomment individual '#include' statements corresponding to each category.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 30, 2020
+*/
+
+// --------------------------------------------------------------------------------- //
+// This is the script configuration section (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
+
+#include villager_protection "entity_protection_services/villager_protection.txt"
+#include passive_protection "entity_protection_services/passive_protection.txt"
+#include piglin_protection "entity_protection_services/piglin_protection.txt"
+#include neutral_protection "entity_protection_services/neutral_protection.txt"
+#include golem_protection "entity_protection_services/golem_protection.txt"
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
+
+#include command_eps "entity_protection_services/(command)eps.txt"
+
+import org.bukkit.entity;
+import org.bukkit.event.entity;
+
+import java.util;
+
+Set[] verificationSets = new Set[5];
+
+@Init : {
+   // Load villager protection map if script file is included
+   $ifIncluded(villager_protection){
+      verificationSets[0] = villager_protection::validTypes;
+   }
+   $else {
+      verificationSets[0] = Collections.emptySet();
+   }
+
+   // Load passive mob protection map if script file is included
+   $ifIncluded(passive_protection){
+      verificationSets[1] = passive_protection::validTypes;
+   }
+   $else {
+      verificationSets[1] = Collections.emptySet();
+   }
+
+   // Load piglin protection map if script file is included
+   $ifIncluded(piglin_protection){
+      verificationSets[2] = piglin_protection::validTypes;
+   }
+   $else {
+      verificationSets[2] = Collections.emptySet();
+   }
+
+   // Load neutral mob protection map if script file is included
+   $ifIncluded(neutral_protection){
+      verificationSets[3] = neutral_protection::validTypes;
+   }
+   $else {
+      verificationSets[3] = Collections.emptySet();
+   }
+
+   // Load golem protection map if script file is included
+   $ifIncluded(golem_protection){
+      verificationSets[4] = golem_protection::validTypes;
+   }
+   $else {
+      verificationSets[4] = Collections.emptySet();
+   }
+}
+
+@EntityDamageByEntity : {
+   EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) wrapper.getEvent();
+   Entity damager = event.getDamager(), damagee = event.getEntity();
+   if (!(damager instanceof Player)) return;
+
+   boolean[] mySettings = command_eps::getOrCreateConfig(damager.getName());
+   for (int i = 0; i < verificationSets.length; i++) {
+      if (!mySettings[i] || !verificationSets[i].contains(damagee.getType())) continue;
+
+      event.setCancelled(true);
+      break;
+   }
+}
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
+
+/*
+MIT License
+
+Copyright (c) 2020 Utkarsh Priyam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/

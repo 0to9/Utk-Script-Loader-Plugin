@@ -1,7 +1,7 @@
 /*
-This is the script file for the "lighting blocks" module of the instamine script.
-This script adds instamine support to the lighting blocks, such as sea lanterns,
-glowstone, lanterns, and redstone lamps.
+This is the script file for the passive mob protection module of
+the eps (entity protection services) script. This script file
+adds protection for passive mobs like cows, sheep, and pigs.
 
 DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
 EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
@@ -9,7 +9,7 @@ Ignore this warning only if you have read the scripting language specifications
 thoroughly and are confident in your abilities to successfully modify the script.
 
 @author Utkarsh Priyam
-@version December 18, 2020
+@version December 30, 2020
 */
 
 // --------------------------------------------------------------------------------- //
@@ -18,22 +18,47 @@ thoroughly and are confident in your abilities to successfully modify the script
 
 import java.util;
 
-import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 
-int minHaste = 2, minEfficiency = 5;
-Set validTypes = new HashSet(), validTools = new HashSet();
+Set validTypes = new HashSet();
 
 @Init : {
-   // All valid blocks --> Allow only select lighting blocks for this module
-   validTypes.add(Material.SEA_LANTERN);
-   validTypes.add(Material.GLOWSTONE);
-   validTypes.add(Material.LANTERN);
-   validTypes.add(Material.SOUL_LANTERN);
-   validTypes.add(Material.REDSTONE_LAMP);
+   // Farm animals
+   validTypes.add(EntityType.CHICKEN);
+   validTypes.add(EntityType.COW);
+   validTypes.add(EntityType.MUSHROOM_COW);
+   validTypes.add(EntityType.PIG);
+   validTypes.add(EntityType.SHEEP);
 
-   // All valid tools --> Only diamond and netherite pickaxes
-   validTools.add(Material.DIAMOND_PICKAXE);
-   validTools.add(Material.NETHERITE_PICKAXE);
+   // Pets
+   validTypes.add(EntityType.CAT);
+   validTypes.add(EntityType.DONKEY);
+   validTypes.add(EntityType.FOX);
+   validTypes.add(EntityType.HORSE);
+   validTypes.add(EntityType.MULE);
+   validTypes.add(EntityType.OCELOT);
+   validTypes.add(EntityType.PARROT);
+   validTypes.add(EntityType.RABBIT);
+   validTypes.add(EntityType.WOLF);
+
+   // Aquatic creatures
+   validTypes.add(EntityType.COD);
+   validTypes.add(EntityType.DOLPHIN);
+   validTypes.add(EntityType.SALMON);
+   validTypes.add(EntityType.SQUID);
+   validTypes.add(EntityType.TROPICAL_FISH);
+   validTypes.add(EntityType.TURTLE);
+
+   // Passive agressive creatures
+   validTypes.add(EntityType.LLAMA);
+   validTypes.add(EntityType.PANDA);
+   validTypes.add(EntityType.POLAR_BEAR);
+   validTypes.add(EntityType.TRADER_LLAMA);
+
+   // Miscellaneous
+   validTypes.add(EntityType.BAT);
+   validTypes.add(EntityType.SKELETON_HORSE);
+   validTypes.add(EntityType.WANDERING_TRADER);
 }
 
 // --------------------------------------------------------------------------------- //

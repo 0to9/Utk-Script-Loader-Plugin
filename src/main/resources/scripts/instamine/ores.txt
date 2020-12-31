@@ -1,21 +1,20 @@
 /*
- * This is the script file for the "ores" module of the instamine script.
- * This script adds instamine support to the ore blocks, such as coal ore,
- * iron ore, diamond ore, nether gold ore, and ancient debris.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 18, 2020
- */
+This is the script file for the "ores" module of the instamine script.
+This script adds instamine support to the ore blocks, such as coal ore,
+iron ore, diamond ore, nether gold ore, and ancient debris.
 
-/*
- * DO NOT MODIFY ANY CODE BEYOND THIS POINT
- * (see warning in the file header comment)
- */
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 18, 2020
+*/
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
 
 import java.util;
 
@@ -25,23 +24,27 @@ int minHaste = 2, minEfficiency = 5;
 Set validTypes = new HashSet(), validTools = new HashSet();
 
 @Init : {
-    // All valid blocks --> Allow only ores for this module
-    validTypes.add(Material.COAL_ORE);
-    validTypes.add(Material.IRON_ORE);
-    validTypes.add(Material.GOLD_ORE);
-    validTypes.add(Material.REDSTONE_ORE);
-    validTypes.add(Material.LAPIS_ORE);
-    validTypes.add(Material.DIAMOND_ORE);
-    validTypes.add(Material.EMERALD_ORE);
+   // All valid blocks --> Allow only ores for this module
+   validTypes.add(Material.COAL_ORE);
+   validTypes.add(Material.IRON_ORE);
+   validTypes.add(Material.GOLD_ORE);
+   validTypes.add(Material.REDSTONE_ORE);
+   validTypes.add(Material.LAPIS_ORE);
+   validTypes.add(Material.DIAMOND_ORE);
+   validTypes.add(Material.EMERALD_ORE);
 
-    validTypes.add(Material.NETHER_QUARTZ_ORE);
-    validTypes.add(Material.NETHER_GOLD_ORE);
-    validTypes.add(Material.ANCIENT_DEBRIS);
+   validTypes.add(Material.NETHER_QUARTZ_ORE);
+   validTypes.add(Material.NETHER_GOLD_ORE);
+   validTypes.add(Material.ANCIENT_DEBRIS);
 
-    // All valid tools --> Only diamond and netherite pickaxes
-    validTools.add(Material.DIAMOND_PICKAXE);
-    validTools.add(Material.NETHERITE_PICKAXE);
+   // All valid tools --> Only diamond and netherite pickaxes
+   validTools.add(Material.DIAMOND_PICKAXE);
+   validTools.add(Material.NETHERITE_PICKAXE);
 }
+
+// --------------------------------------------------------------------------------- //
+//                                    END OF CODE                                    //
+// --------------------------------------------------------------------------------- //
 
 /*
 MIT License

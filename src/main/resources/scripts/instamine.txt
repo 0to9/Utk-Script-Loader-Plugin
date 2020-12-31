@@ -1,20 +1,20 @@
 /*
- * This is the main script file for adding instamine-like functionality
- * for many blocks which do not support it in the default vanilla game.
- *
- * This instamine script is modularized by general block type categories,
- * each of which is defined more explicitly in its own script file.
- * To customize or configure which modules are active, simply comment or
- * uncomment individual '#include' statements corresponding to each category.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 18, 2020
- */
+This is the main script file for adding instamine-like functionality
+for many blocks which do not support it in the default vanilla game.
+
+This instamine script is modularized by general block type categories,
+each of which is defined more explicitly in its own script file.
+To customize or configure which modules are active, simply comment or
+uncomment individual '#include' statements corresponding to each category.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 18, 2020
+*/
 
 // --------------------------------------------------------------------------------- //
 // This is the script configuration section (see warning in the file header comment) //
@@ -45,114 +45,106 @@ import org.bukkit.inventory;
 import org.bukkit.inventory.meta;
 import org.bukkit.potion;
 
-/**
- * Called whenever a PlayerInteractEvent occurs
- *
- * For each module of Instamine, if it is included, this
- * method checks if the block type is valid for that
- * module, and, if so, attempts to break that block.
- *
- * It also prevents any further modules from trying to
- * break the block. This second condition is necessary
- * to prevent block duping by poorly written module scripts.
- */
+/*
+Called whenever a PlayerInteractEvent occurs
+
+For each module of Instamine, if it is included, this
+method checks if the block type is valid for that
+module, and, if so, attempts to break that block.
+
+It also prevents any further modules from trying to
+break the block. This second condition is necessary
+to prevent block duping by poorly written module scripts.
+*/
 @PlayerInteract : {
-    PlayerInteractEvent event = (PlayerInteractEvent) wrapper.getEvent();
-    if (event.getAction() != Action.LEFT_CLICK_BLOCK)
-        return;
+   PlayerInteractEvent event = (PlayerInteractEvent) wrapper.getEvent();
+   if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
 
-    Block block = event.getClickedBlock();
-    if (block == null)
-        return;
+   Block block = event.getClickedBlock();
+   if (block == null) return;
 
-    Material blockType = block.getType();
-    if (false);
-
-    $ifIncluded(ores) {
-        else if (ores::validTypes.contains(blockType))
-            breakBlock(block, event.getPlayer(), ores::validTools,
-                        ores::minHaste, ores::minEfficiency);
-    }
-    $ifIncluded(glass) {
-        else if (glass::validTypes.contains(blockType))
-            breakBlock(block, event.getPlayer(), glass::validTools,
-                        glass::minHaste, glass::minEfficiency);
-    }
-    $ifIncluded(concrete) {
-        else if (concrete::validTypes.contains(blockType))
-            breakBlock(block, event.getPlayer(), concrete::validTools,
-                        concrete::minHaste, concrete::minEfficiency);
-    }
-    $ifIncluded(logs) {
-        else if (logs::validTypes.contains(blockType))
-            breakBlock(block, event.getPlayer(), logs::validTools,
-                        logs::minHaste, logs::minEfficiency);
-    }
-    $ifIncluded(wood_products) {
-        else if (wood_products::validTypes.contains(blockType))
-            breakBlock(block, event.getPlayer(), wood_products::validTools,
-                        wood_products::minHaste, wood_products::minEfficiency);
-    }
-    $ifIncluded(stone_products) {
-        else if (stone_products::validTypes.contains(blockType))
-            breakBlock(block, event.getPlayer(), stone_products::validTools,
-                        stone_products::minHaste, stone_products::minEfficiency);
-    }
-    $ifIncluded(lighting_blocks) {
-        else if (lighting_blocks::validTypes.contains(blockType))
-            breakBlock(block, event.getPlayer(), lighting_blocks::validTools,
-                        lighting_blocks::minHaste, lighting_blocks::minEfficiency);
-    }
-    $ifIncluded(blocks_of) {
-        else if (blocks_of::validTypes.contains(blockType))
-            breakBlock(block, event.getPlayer(), blocks_of::validTools,
-                        blocks_of::minHaste, blocks_of::minEfficiency);
-    }
+   Material blockType = block.getType();
+   if (false);
+   $ifIncluded(ores) {
+      else if (ores::validTypes.contains(blockType)) {
+         breakBlock(block, event.getPlayer(), ores::validTools, ores::minHaste, ores::minEfficiency);
+      }
+   }
+   $ifIncluded(glass) {
+      else if (glass::validTypes.contains(blockType)) {
+         breakBlock(block, event.getPlayer(), glass::validTools, glass::minHaste, glass::minEfficiency);
+      }
+   }
+   $ifIncluded(concrete) {
+      else if (concrete::validTypes.contains(blockType)) {
+         breakBlock(block, event.getPlayer(), concrete::validTools, concrete::minHaste, concrete::minEfficiency);
+      }
+   }
+   $ifIncluded(logs) {
+      else if (logs::validTypes.contains(blockType)) {
+         breakBlock(block, event.getPlayer(), logs::validTools, logs::minHaste, logs::minEfficiency);
+      }
+   }
+   $ifIncluded(wood_products) {
+      else if (wood_products::validTypes.contains(blockType)) {
+         breakBlock(block, event.getPlayer(), wood_products::validTools, wood_products::minHaste, wood_products::minEfficiency);
+      }
+   }
+   $ifIncluded(stone_products) {
+      else if (stone_products::validTypes.contains(blockType)) {
+         breakBlock(block, event.getPlayer(), stone_products::validTools, stone_products::minHaste, stone_products::minEfficiency);
+      }
+   }
+   $ifIncluded(lighting_blocks) {
+      else if (lighting_blocks::validTypes.contains(blockType)) {
+         breakBlock(block, event.getPlayer(), lighting_blocks::validTools, lighting_blocks::minHaste, lighting_blocks::minEfficiency);
+      }
+   }
+   $ifIncluded(blocks_of) {
+      else if (blocks_of::validTypes.contains(blockType)) {
+         breakBlock(block, event.getPlayer(), blocks_of::validTools, blocks_of::minHaste, blocks_of::minEfficiency);
+      }
+   }
 }
 
-/**
- * Breaks the specified block if and only if the given player
- * has the right potion effects, has a valid tool, and the tool
- * has the minimum required level of the Efficiency enchantment
- *
- * @param block         The block to be instamined
- * @param player        The player who is currenly mining
- * @param validTools    A set of all valid tools for the instamine
- * @param minHaste      The minimum level of Haste required for the instamine
- * @param minEfficiency The minimum level of Efficiency required for the instamine
- */
+/*
+Breaks the specified block if and only if the given player
+has the right potion effects, has a valid tool, and the tool
+has the minimum required level of the Efficiency enchantment
+
+@param block         The block to be instamined
+@param player        The player who is currenly mining
+@param validTools    A set of all valid tools for the instamine
+@param minHaste      The minimum level of Haste required for the instamine
+@param minEfficiency The minimum level of Efficiency required for the instamine
+*/
 void breakBlock(Block block, Player player, Set validTools, int minHaste, int minEfficiency) {
-    // Make sure player has the minimum required level of Haste effect
-    PotionEffect potionEffect = player.getPotionEffect(PotionEffectType.FAST_DIGGING);
-    if (potionEffect == null || potionEffect.getAmplifier() < minHaste - 1)
-        return;
+   // Make sure player has the minimum required level of Haste effect
+   PotionEffect potionEffect = player.getPotionEffect(PotionEffectType.FAST_DIGGING);
+   if (potionEffect == null || potionEffect.getAmplifier() < minHaste - 1) return;
 
-    // Make sure player does not have Mining Fatigue
-    potionEffect = player.getPotionEffect(PotionEffectType.SLOW_DIGGING);
-    if (potionEffect != null)
-        return;
+   // Make sure player does not have Mining Fatigue
+   potionEffect = player.getPotionEffect(PotionEffectType.SLOW_DIGGING);
+   if (potionEffect != null) return;
 
-    // Make sure player is using a valid tool with the minimum required level of Efficiency
-    ItemStack mainHandItem = player.getInventory().getItemInMainHand();
-    Material itemType = mainHandItem.getType();
-    if (!validTools.contains(itemType))
-        return;
-    if (mainHandItem.getEnchantmentLevel(Enchantment.DIG_SPEED) < minEfficiency)
-        return;
+   // Make sure player is using a valid tool with the minimum required level of Efficiency
+   ItemStack mainHandItem = player.getInventory().getItemInMainHand();
+   Material itemType = mainHandItem.getType();
+   if (!validTools.contains(itemType)) return;
+   if (mainHandItem.getEnchantmentLevel(Enchantment.DIG_SPEED) < minEfficiency) return;
 
-    // Calculate chance of durability loss from item's Unbreaking enchantment level
-    int unbreakingLevel = mainHandItem.getEnchantmentLevel(Enchantment.DURABILITY);
-    double chance = 1.0 / (unbreakingLevel + 1.0);
-    if (Math.random() < chance) {
-        Damageable damageable = ((Damageable) mainHandItem.getItemMeta());
-        if (damageable == null)
-            return;
-        damageable.setDamage(damageable.getDamage() + 1);
-        mainHandItem.setItemMeta((ItemMeta) damageable);
-    }
+   // Calculate chance of durability loss from item's Unbreaking enchantment level
+   int unbreakingLevel = mainHandItem.getEnchantmentLevel(Enchantment.DURABILITY);
+   double chance = 1.0 / (unbreakingLevel + 1.0);
+   if (Math.random() < chance) {
+      Damageable damageable = ((Damageable) mainHandItem.getItemMeta());
+      if (damageable == null) return;
+      damageable.setDamage(damageable.getDamage() + 1);
+      mainHandItem.setItemMeta((ItemMeta) damageable);
+   }
 
-    // (Naturally) Drop 1 of the item of the block in the world at the location of the block
-    block.breakNaturally(mainHandItem);
+   // (Naturally) Drop 1 of the item of the block in the world at the location of the block
+   block.breakNaturally(mainHandItem);
 }
 
 // --------------------------------------------------------------------------------- //

@@ -35,22 +35,25 @@ public class SubCommandHandler {
     public static void executeCommand(CommandSender sender, String subCommand, String[] args) {
         if (isInitialized) {
             Collection<Pair<Method, ClassWrapper<Integer>>> execs = ALL_EXECUTORS.get(subCommand);
-            if (execs != null) {
-                Iterator<Pair<Method, ClassWrapper<Integer>>> it = execs.iterator();
-                while (it.hasNext()) {
-                    Pair<Method, ClassWrapper<Integer>> pair = it.next();
-                    try {
-                        pair.first.invoke(null, sender, args);
-                    } catch (Exception e) {
-                        if (++pair.second.value >= 10)
-                            it.remove();
-                        ErrorLogger.logError(() -> subCommand + " executor failed: #" + pair.second.value, e);
+            if (execs != null)
+                // try to prevent ConcurrentModificationException if reload happens
+                try {
+                    Iterator<Pair<Method, ClassWrapper<Integer>>> it = execs.iterator();
+                    while (it.hasNext()) {
+                        Pair<Method, ClassWrapper<Integer>> pair = it.next();
+                        try {
+                            pair.first.invoke(null, sender, args);
+                        } catch (Exception e) {
+                            if (++pair.second.value >= 10)
+                                it.remove();
+                            ErrorLogger.logError(() -> subCommand + " executor failed: #" + pair.second.value, e);
+                        }
                     }
+                } catch (ConcurrentModificationException ignored) {
                 }
-            } else
+            else
                 CommandUtil.sendWarningMessage(sender, "Unable to execute sub-command '" + subCommand + "'");
-        }
-        else
+        } else
             CommandUtil.sendMessage(sender, PluginMain.PLUGIN_NAME + " command handler was not initialized");
     }
 
@@ -61,20 +64,23 @@ public class SubCommandHandler {
         if (isInitialized) {
             List<String> completions = new LinkedList<>();
             Collection<Pair<Method, ClassWrapper<Integer>>> comps = ALL_COMPLETERS.get(subCommand);
-            if (comps != null) {
-                Iterator<Pair<Method, ClassWrapper<Integer>>> it = comps.iterator();
-                while (it.hasNext()) {
-                    Pair<Method, ClassWrapper<Integer>> pair = it.next();
-                    try {
-                        //noinspection unchecked
-                        completions.addAll((List<String>) pair.first.invoke(null, sender, args));
-                    } catch (Exception e) {
-                        if (++pair.second.value >= 10)
-                            it.remove();
-                        ErrorLogger.logError(() -> subCommand + " tab completer failed: #" + pair.second.value, e);
+            if (comps != null)
+                // try to prevent ConcurrentModificationException if reload happens
+                try {
+                    Iterator<Pair<Method, ClassWrapper<Integer>>> it = comps.iterator();
+                    while (it.hasNext()) {
+                        Pair<Method, ClassWrapper<Integer>> pair = it.next();
+                        try {
+                            //noinspection unchecked
+                            completions.addAll((List<String>) pair.first.invoke(null, sender, args));
+                        } catch (Exception e) {
+                            if (++pair.second.value >= 10)
+                                it.remove();
+                            ErrorLogger.logError(() -> subCommand + " tab completer failed: #" + pair.second.value, e);
+                        }
                     }
+                } catch (ConcurrentModificationException ignored) {
                 }
-            }
             return completions;
         }
         return null;

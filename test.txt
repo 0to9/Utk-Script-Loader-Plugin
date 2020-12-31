@@ -6,15 +6,4 @@
 #include me "test.txt"
 
 @Init : {
-    int var = 0;
-    System.out.println(-1);
-    switch (var) {
-        case 0:
-        case 1:
-            System.out.println(1);
-
-        default:
-            System.out.println(2);
-            break;
-    }
 }

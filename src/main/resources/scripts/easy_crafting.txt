@@ -1,20 +1,20 @@
 /*
- * This is the main script file for adding easy crafting functionality.
- * In other words, its modules add features which improve the crafting
- * experience through commands and other interactions.
- *
- * The default modules provide a craft command and autocrafting support.
- * To customize or configure which modules are active, simply comment or
- * uncomment individual '#include' statements corresponding to each category.
- *
- * DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
- * EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
- * Ignore this warning only if you have read the scripting language specifications
- * thoroughly and are confident in your abilities to successfully modify the script.
- *
- * @author Utkarsh Priyam
- * @version December 20, 2020
- */
+This is the main script file for adding easy crafting functionality.
+In other words, its modules add features which improve the crafting
+experience through commands and other interactions.
+
+The default modules provide a craft command and autocrafting support.
+To customize or configure which modules are active, simply comment or
+uncomment individual '#include' statements corresponding to each category.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 20, 2020
+*/
 
 // --------------------------------------------------------------------------------- //
 // This is the script configuration section (see warning in the file header comment) //

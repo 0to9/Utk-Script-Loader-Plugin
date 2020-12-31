@@ -3,6 +3,7 @@ package me.utk.spigot_scripting.plugin.command;
 import me.utk.spigot_scripting.command.CommandUtil;
 import me.utk.spigot_scripting.command.SubCommandHandler;
 import me.utk.spigot_scripting.plugin.PluginMain;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -87,9 +88,12 @@ public class PluginCommandExecutor implements CommandExecutor {
                         break;
                 }
                 if (reload) {
-                    // TODO make this reload all script classes as well
-                    PluginMain.INSTANCE.reloadScripts();
-                    CommandUtil.sendMessage(sender, ChatColor.GREEN + "Default scripts reloaded");
+                    Bukkit.broadcastMessage(ChatColor.AQUA + PluginMain.PLUGIN_NAME + " script reload initiated by " + sender.getName());
+
+                    PluginMain.INSTANCE.reloadPlugin(); // Also reloads scripts
+                    CommandUtil.sendMessage(sender, ChatColor.GREEN + "Default scripts loaded successfully");
+
+                    Bukkit.broadcastMessage(ChatColor.AQUA + "Script reload complete");
                 } else {
                     CommandUtil.sendWarningMessage(sender, label + " reload' will reload all default scripts and may override customizations");
                     CommandUtil.sendWarningMessage(sender, "To confirm reload, use the command " + label + " reload confirm'");
