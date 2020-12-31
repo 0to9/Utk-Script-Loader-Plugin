@@ -1,0 +1,293 @@
+/*
+This is the script file for the 'eps' (entity protection services) sub-command.
+
+DO NOT MODIFY ANY PORTION OF THIS SCRIPT FILE OR ANY OTHER SCRIPT FILES
+EXCEPT WHERE INDICATED BY COMMENTS. DOING SO MAY CAUSE BREAK THE SCRIPT.
+Ignore this warning only if you have read the scripting language specifications
+thoroughly and are confident in your abilities to successfully modify the script.
+
+@author Utkarsh Priyam
+@version December 30, 2020
+*/
+
+// --------------------------------------------------------------------------------- //
+// This is the script configuration section (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
+
+/*
+The colors to use for various command output messages
+
+ERROR_MESSAGE_COLOR is used for fatal errors (execution halts)
+WARNING_MESSAGE_COLOR is used for other errors (execution continues)
+SUCCESS_MESSAGE_COLOR is used for successful operation
+*/
+ChatColor ERROR_MESSAGE_COLOR = ChatColor.RED;
+ChatColor WARNING_MESSAGE_COLOR = ChatColor.GOLD;
+ChatColor SUCCESS_MESSAGE_COLOR = ChatColor.GREEN;
+
+/*
+The colors to use for sending eps config settings to players
+
+ENABLED_CONFIG_SETTING_COLOR is for enabled settings
+DISABLED_CONFIG_SETTING_COLOR is for disabled settings
+*/
+ChatColor ENABLED_CONFIG_SETTING_COLOR = ChatColor.GREEN;
+ChatColor DISABLED_CONFIG_SETTING_COLOR = ChatColor.RED;
+
+// --------------------------------------------------------------------------------- //
+// DO NOT MODIFY ANY CODE BEYOND THIS POINT (see warning in the file header comment) //
+// --------------------------------------------------------------------------------- //
+
+#ref MapEntry java.util.Map.Entry
+
+import org.bukkit;
+import org.bukkit.command;
+import org.bukkit.entity;
+import org.bukkit.event.player;
+
+import java.util;
+import java.io;
+
+Map settings = new HashMap();
+
+boolean[] getOrCreateConfig(String playerName) {
+   boolean[] config = (boolean[]) settings.get(playerName);
+   if (config == null) settings.put(playerName, config = new boolean[5]);
+   return config;
+}
+
+String[] protectionNames = {
+   "villager protection",
+   "passive mob protection",
+   "piglin protection",
+   "neutral mob protection",
+   "golem protection"
+};
+
+void sendSettings(CommandSender sender, String configOwnerString, boolean[] mySettings) {
+   sender.sendMessage(configOwnerString + " eps settings:");
+   for (int i = 0; i < mySettings.length; i++) {
+      String message = " - " + protectionNames[i] + ": ";
+      message += mySettings[i] ? ENABLED_CONFIG_SETTING_COLOR : DISABLED_CONFIG_SETTING_COLOR;
+      sender.sendMessage(message + mySettings[i]);
+   }
+}
+
+/*
+Executes a call to the 'eps' (entity protection services) sub-command
+*/
+$exec eps : {
+   if (!(sender instanceof Player)) {
+      sender.sendMessage(ERROR_MESSAGE_COLOR + "Only players can use the `eps' sub-command");
+      return;
+   }
+
+   if (args.length == 0) {
+      sender.sendMessage(ERROR_MESSAGE_COLOR + "The `eps' sub-command requires at least 1 additional argument");
+      return;
+   }
+
+   boolean[] mySettings = getOrCreateConfig(sender.getName());
+   switch (args[0]) {
+      case "list": {
+         if (args.length == 1) sendSettings(sender, "Your", mySettings);
+         else {
+            if (args.length != 2) sender.sendMessage(WARNING_MESSAGE_COLOR + "The `eps list' sub-command takes at most 1 additional argument");
+
+            boolean[] otherSettings = (boolean[]) settings.get(args[1]);
+            if (otherSettings == null) {
+               sender.sendMessage(ERROR_MESSAGE_COLOR + "You must list a valid player's eps configuration settings");
+               return;
+            }
+            sendSettings(sender, args[1] + "'s", otherSettings);
+         }
+         break;
+      }
+
+      case "load": {
+         if (args.length == 1) sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Loaded own eps settings");
+         else {
+            if (args.length != 2) sender.sendMessage(WARNING_MESSAGE_COLOR + "The `eps load' sub-command takes at most 1 additional argument");
+
+            boolean[] otherSettings = (boolean[]) settings.get(args[1]);
+            if (otherSettings == null) {
+               sender.sendMessage(ERROR_MESSAGE_COLOR + "You must load a valid player's eps configuration settings");
+               return;
+            }
+            for (int i = 0; i < mySettings.length; i++) mySettings[i] = otherSettings[i];
+            sender.sendMessage(SUCCESS_MESSAGE_COLOR + "Loaded " + args[1] + "'s eps settings");
+         }
+         break;
+      }
+
+      case "enable":
+      case "disable":
+      case "toggle": {
+         int replacementCode = 0;
+         if (args[0].equals("enable")) replacementCode = 1;
+         else if (args[0].equals("disable")) replacementCode = -1;
+         String actionVerb = replacementCode == 0 ? "Toggled" : replacementCode == 1 ? "Enabled" : "Disabled";
+
+         if (args.length == 1) {
+            if (replacementCode == 0) for (int i = 0; i < 3; i++) mySettings[i] = !mySettings[i];
+            else {
+               boolean replacementValue = replacementCode == 1;
+               for (int i = 0; i < 3; i++) mySettings[i] = replacementValue;
+            }
+
+            sender.sendMessage(SUCCESS_MESSAGE_COLOR + actionVerb + " all eps settings");
+         } else {
+            if (args.length != 2) sender.sendMessage(
+               WARNING_MESSAGE_COLOR + "The `eps " + args[0] + "' sub-command takes at most 1 additional argument"
+            );
+
+            String settingID;
+            switch (args[1]) {
+               case "villager_protection": {
+                  int settingIndex = 0;
+                  settingID = protectionNames[settingIndex];
+                  if (replacementCode == 0) mySettings[settingIndex] = !mySettings[settingIndex];
+                  else mySettings[settingIndex] = replacementCode == 1;
+                  break;
+               }
+
+               case "passive_protection": {
+                  int settingIndex = 1;
+                  settingID = protectionNames[settingIndex];
+                  if (replacementCode == 0) mySettings[settingIndex] = !mySettings[settingIndex];
+                  else mySettings[settingIndex] = replacementCode == 1;
+                  break;
+               }
+
+               case "piglin_protection": {
+                  int settingIndex = 2;
+                  settingID = protectionNames[settingIndex];
+                  if (replacementCode == 0) mySettings[settingIndex] = !mySettings[settingIndex];
+                  else mySettings[settingIndex] = replacementCode == 1;
+                  break;
+               }
+
+               case "neutral_protection": {
+                  int settingIndex = 3;
+                  settingID = protectionNames[settingIndex];
+                  if (replacementCode == 0) mySettings[settingIndex] = !mySettings[settingIndex];
+                  else mySettings[settingIndex] = replacementCode == 1;
+                  break;
+               }
+
+               case "golem_protection": {
+                  int settingIndex = 4;
+                  settingID = protectionNames[settingIndex];
+                  if (replacementCode == 0) mySettings[settingIndex] = !mySettings[settingIndex];
+                  else mySettings[settingIndex] = replacementCode == 1;
+                  break;
+               }
+
+               default: {
+                  sender.sendMessage(ERROR_MESSAGE_COLOR + "You must " + args[0] + " a valid eps setting");
+                  return;
+               }
+            }
+            sender.sendMessage(SUCCESS_MESSAGE_COLOR + actionVerb + " eps " + settingID + " setting");
+         }
+         break;
+      }
+
+      default: {
+         sender.sendMessage(ERROR_MESSAGE_COLOR + "`" + args[0] + "' is not a valid operation for the `eps' sub-command");
+         return;
+      }
+   }
+}
+
+/*
+Gives tab-completion for the 'eps' (entity protection services) sub-command
+*/
+$comp eps : {
+   List list = new LinkedList();
+   if (!(sender instanceof Player)) return list;
+
+   switch (args.length) {
+      case 1: {
+         list.add("list");
+         list.add("load");
+         list.add("enable");
+         list.add("disable");
+         list.add("toggle");
+         break;
+      }
+
+      case 2: {
+         switch (args[0]) {
+            case "list":
+            case "load": {
+               list.addAll(settings.keySet());
+               break;
+            }
+
+            case "enable":
+            case "disable":
+            case "toggle": {
+               list.add("villager_protection");
+               list.add("passive_protection");
+               list.add("piglin_protection");
+               list.add("neutral_protection");
+               list.add("golem_protection");
+               break;
+            }
+
+            default: {
+               break;
+            }
+         }
+         break;
+      }
+
+      default: {
+         break;
+      }
+   }
+   return list;
+}
+
+@Init : {
+   try {
+      BufferedReader br = new BufferedReader(new FileReader($getRelative($FILE + "/config.txt")));
+      String line;
+      while ((line = br.readLine()) != null) {
+         try {
+            StringTokenizer st = new StringTokenizer(line);
+            boolean[] mySettings = getOrCreateConfig(st.nextToken());
+            for (int i = 0; i < mySettings.length; i++) mySettings[i] = st.nextToken().equals("true");
+         } catch (Exception ignored) {
+         }
+      }
+   } catch (FileNotFoundException ignored) {
+   }
+}
+
+@Exit : {
+   try {
+      PrintWriter pw = new PrintWriter(new FileWriter($getRelative($FILE + "/config.txt")));
+      for ($MapEntry e : settings.entrySet()) {
+         pw.print(e.getKey());
+         boolean[] config = (boolean[]) e.getValue();
+         for (int i = 0; i < config.length; i++) {
+            pw.print(" ");
+            pw.print(config[i]);
+         }
+         pw.println();
+      }
+      pw.close();
+   } catch (FileNotFoundException ignored) {
+   }
+}
+
+@PlayerJoin : {
+   Player player = ((PlayerJoinEvent) wrapper.getEvent()).getPlayer();
+   if (!settings.containsKey(player.getName())) {
+      getOrCreateConfig(player.getName()); // side effect of creating configurations
+      player.sendMessage(WARNING_MESSAGE_COLOR + "Unable to find your entity protection settings");
+      player.sendMessage(WARNING_MESSAGE_COLOR + "Defaulting to no protection...");
+   }
+}
