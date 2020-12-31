@@ -1,6 +1,4 @@
 # Plugin Features
-In addition to script loading, this plugin also provides some core functionality, including a few default sub-commands for this plugin's command and a collection of starter scripts (which were all ported over from this project's precursor: the Utk Plugin Suite).
-
 ## The ```/usl``` Command
 The Bukkit/Spigot API doesn't permit plugins to define commands on-the-fly. All commands must be explicitly defined within the plugin's JAR in the [```plugin.yml```](src/main/resources/plugin.yml) file prior to being loaded in. As a result, the plugin cannot support custom command generation for scripts. To overcome this problem, this plugin defines a single command ```/usl``` (and 3 aliases ```/utk```, ```/vpp```, and ```/v++``` for legacy support), for which scripts can define sub-commands.
 
