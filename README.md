@@ -6,15 +6,6 @@ The Utk Script Loader Plugin is a custom script loading program that allows for 
 
 This plugin provides a feature-rich, custom scripting language that can be used to interface with the supported APIs in a simple and easily scalable manner. The scriptig interface is guaranteed to remain roughly consistent between plugin versions and to be compatible across a variety of Bukkit-extending APIs.
 
-## Why Script?
-*Why should any developer use this scripting plugin over simply creating their own? After all, the script is essentially most of the code required for a stand-alone plugin, right?*
-
-While creating a script for this script loading plugin may seem like most of the work for creating a plugin, the plugin itself would also require working extensively with the bukkit event listeners. Additionally, the plugin would lose the support of a lot of custom events and event handlers written specifically for this scripting plugin.
-
-On the other hand, going with the script-based solution also benefits the end user. With an text-based script, users can read the implementations for themselves and customize the code with little more than a text editor. A few of the default scripts included with the plugin showcase this principle very well.
-
-And, last but certainly not least, writing scripts for this script loading plugin abstracts the issue of working with multiple different APIs to this plugin. Because of the guarantee of functionality for APIs derived from the Bukkit API, a script written for one API can function as well as possible under other APIs, often with API-optimized event-handling.
-
 ## The Scripting Language
 The scripting language is a hybrid between [C++](http://www.cplusplus.com/) and [Java](https://www.oracle.com/java/), with additional custom elements thrown in for ease of development. For a comprehensive look at the specifics of the language and the custom-designed elements offered in by the language, check out the [```language specification```](language%20specification) folder.
 
@@ -28,3 +19,11 @@ In addition to script loading, this plugin also provides some core functionality
 
 For a close look at all of the specific features provided by this plugin, check out [```Plugin Features.md```](Plugin%20Features.md).
 
+## Why Script?
+*Why should any developer use this scripting plugin over simply creating their own? After all, the script is essentially most of the code required for a stand-alone plugin, right?*
+
+While creating a script for this script loading plugin may seem like most of the work for creating a plugin, the plugin itself would also require working extensively with the bukkit event listeners. Additionally, the plugin would lose the support of a lot of custom events and event handlers written specifically for this scripting plugin.
+
+On the other hand, going with the script-based solution also benefits the end user. With an text-based script, users can read the implementations for themselves and customize the code with little more than a text editor. A few of the default scripts included with the plugin showcase this principle very well.
+
+And, last but certainly not least, writing scripts for this script loading plugin abstracts the issue of working with multiple different APIs to this plugin. Because of the guarantee of functionality for APIs derived from the Bukkit API, a script written for one API can function as well as possible under other APIs, often with API-optimized event-handling.
