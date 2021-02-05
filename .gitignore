@@ -5,4 +5,5 @@ out/**
 target/**
 code_dump/**
 dump/**
+logs/**
 scripts/**

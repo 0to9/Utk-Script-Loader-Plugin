@@ -9,7 +9,7 @@ Ignore this warning only if you have read the scripting language specifications
 thoroughly and are confident in your abilities to successfully modify the script.
 
 @author Utkarsh Priyam
-@version December 30, 2020
+@version January 1, 2021
 */
 
 // --------------------------------------------------------------------------------- //
@@ -127,6 +127,16 @@ $comp craft : {
    return list;
 }
 
+$help craft : {
+   String craftingReq = REQUIRE_CRAFTING_TABLE ? "requires" : "does not require";
+   return new String[] {
+      "The 'craft' sub-command lets players craft repetitive craftng recipes in bulk",
+      "In its current configuration, it " + craftingReq + " players to have a crafting table in their inventory to use the command",
+      "The command takes the necessary crafting components from the player inventory (but not nested storage such as shulker boxes), and crafts the maximum amount possible of the specified recipe",
+      "Use tab completion for specifics on command usage"
+   };
+}
+
 void addToInventory(ItemStack itemStack, int amount, Inventory inv, World world, Location loc) {
    while (amount > 0) {
       ItemStack copy = itemStack.clone();
@@ -150,7 +160,7 @@ boolean isValid(ItemStack stack) {
 /*
 MIT License
 
-Copyright (c) 2020 Utkarsh Priyam
+Copyright (c) 2020-2021 Utkarsh Priyam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

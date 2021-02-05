@@ -1,7 +1,7 @@
 name: UtkScriptLoaderPlugin
-version: 3.0.0-1.16.4
+version: pre3.0.0-1.16.4-rev6
 author: utk003
-main: me.utk.spigot_scripting.plugin.PluginMain
+main: io.github.utk003.spigot_scripting.plugin.PluginMain
 api-version: 1.16
 description: A custom script-loading program for easily configurable server modifications
 commands:

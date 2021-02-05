@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.utk</groupId>
+    <groupId>io.github.utk003</groupId>
     <artifactId>utk-script-loader-plugin</artifactId>
     <name>Utk Script Loader Plugin</name>
     <version>Alpha</version>
@@ -38,7 +38,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>me.utk.spigot_scripting.Main</mainClass>
+                                    <mainClass>io.github.utk003.spigot_scripting.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
@@ -68,9 +68,9 @@
     <dependencies>
         <!-- My Libraries -->
         <dependency>
-            <groupId>me.utk</groupId>
+            <groupId>io.github.utk003</groupId>
             <artifactId>utilities-library</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.5</version>
         </dependency>
 
         <!-- Java Runtime Class Modifier Library -->
@@ -94,6 +94,4 @@
             <version>1.16.4-R0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
-
 </project>

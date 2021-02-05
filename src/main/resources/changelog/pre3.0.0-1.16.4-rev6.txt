@@ -1,0 +1,7 @@
+Robust Error Reporting
+The plugin now reports errors and logged messages to console (configurable) and dumps a full report of all such events to a logs folder (currently not configurable, with no plans underway)
+This will help significantly, both for debugging issues with the plugin itself and with custom scripts (scripts can use this reporting system too!!)
+
+Bug Fixes Galore
+Apparently the class loading in use by the plugin was severely messed up
+This problem is now fixed (with lots of help from the new error reporting system).... scripts should actually load in now

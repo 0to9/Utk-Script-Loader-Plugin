@@ -10,7 +10,7 @@ Ignore this warning only if you have read the scripting language specifications
 thoroughly and are confident in your abilities to successfully modify the script.
 
 @author Utkarsh Priyam
-@version December 21, 2020
+@version January 5, 2021
 */
 
 // --------------------------------------------------------------------------------- //
@@ -21,6 +21,7 @@ thoroughly and are confident in your abilities to successfully modify the script
 #include easy_crafting              "easy_crafting.txt"
 #include scoreboard                 "scoreboard.txt"
 #include entity_protection_services "entity_protection_services.txt"
+#include more_stacking              "more_stacking.txt"
 
 // --------------------------------------------------------------------------------- //
 //                                    END OF CODE                                    //
@@ -29,7 +30,7 @@ thoroughly and are confident in your abilities to successfully modify the script
 /*
 MIT License
 
-Copyright (c) 2020 Utkarsh Priyam
+Copyright (c) 2020-2021 Utkarsh Priyam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
